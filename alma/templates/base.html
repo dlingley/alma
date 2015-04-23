@@ -1,0 +1,97 @@
+{% comment %}
+We need to load the permissions template library so we can access the permission functions defined in perms.py modules
+{% endcomment %}
+{% load permissions %}
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{% block title %}ARC Project{% endblock %}</title>
+
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/calendar.css' %}" />
+    {% block head %}
+    {% endblock %}
+</head>
+<body>
+    {% block body %}
+
+        {% comment %}
+        If the user is cloaked as a different user, we display a message indicating it
+        {% endcomment %}
+        {% if user.is_cloaked %}
+            <div class="alert alert-danger" id="mask-alert">
+                <strong class="text-danger">You are masquerading as {{ user }}</strong>
+                <form style="display:inline" method="post" action="{% url 'uncloak' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ on_uncloak_goto }}" />
+                    <input type="submit" name="submit" value="Un-masquerade" class="btn btn-danger btn-xs" />
+                </form>
+            </div>
+        {% endif %}
+
+        <div class="{% if user.is_cloaked %}cloak-pushdown{% endif %}">
+            <div class="container" id="header">
+                <a href="http://www.pdx.edu"><img src="{% static 'img/logo.png' %}" alt="Home"></a>
+                <a id="brand" href="#">{{ project_name }}</a>
+
+                <div id="upper-info">
+                    {% if user.is_authenticated %}
+                        <p>logged in as <a href="#">{{ user }}</a></p>
+                    {% endif %}
+                </div>
+            </div>
+            <nav class="navbar navbar-default">
+                <div class="container">
+                    <div class="container-fluid">
+                        <ul class="nav navbar-nav">
+                            <li><a href="{% url 'home' %}">Home</a></li>
+                            {% if user|can_list_users %}
+                                <li><a href="{% url 'users-list' %}">Users</a></li>
+                            {% endif %}
+                        </ul>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            {% if user.is_authenticated %}
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> Account</a>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="{% url 'users-edit' user.pk %}">Profile</a></li>
+                                        <li><a href="{% url 'logout' %}">Logout</a></li>
+                                    </ul>
+                                </li>
+                            {% else %}
+                                <li><a href="{% url 'login' %}"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="container-fluid" id="main">
+                {% comment %}
+                Show the messages that were set with `django.contrib.messages`
+                {% endcomment %}
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div {% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+
+                {% block content %}{% endblock %}
+            </div>
+            <div class="footer">
+                <div class="container text-center text-muted">
+                    <h6>Copyright &copy; {% now "Y" %}</h6>
+                </div>
+            </div>
+        </div>
+    {% endblock %}
+</body>
+</html>

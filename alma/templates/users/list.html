@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="pull-right">
+    <a class="btn btn-primary" href="{% url 'users-create' %}">Create User</a>
+</div>
+<h3>User List</h3>
+
+{% if users %}
+    <table class="table table-condensed table-striped">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+                <tr>
+                    <td><a href="{% url 'users-detail' user.pk %}">{{ user.email }}</a></td>
+                    <td>
+                        <a href="{% url 'users-edit' user.pk %}">Edit</a>
+                        <a href="{% url 'users-delete' user.pk %}">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% include "_pagination.html" with items=users %}
+{% else %}
+    <div class="alert alert-warning">You haven't created any users!</div>
+{% endif %}
+
+{% endblock %}

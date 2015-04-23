@@ -1,0 +1,83 @@
+body {
+    background-color:#E5E6DE;
+    background-image: url('../img/header.jpg');
+    background-repeat: repeat-x;
+}
+
+.formset-row-deleted {
+    opacity:0.2;
+    filter: alpha(opacity = 20);
+}
+
+.formset-row .form-group {
+    margin-bottom:0;
+}
+
+.radio, .checkbox {
+    margin-top:0;
+}
+
+.cloak-pushdown {
+    margin-top:60px;
+}
+
+#header {
+    padding-top:24px;
+    padding-bottom:24px;
+}
+
+#upper-info {
+    float: right;
+    color: #fff;
+    font-size: 12px;
+    padding-top:5px;
+    margin-top:-24px; /* these needs to be the negative of #header padding-top */
+}
+
+#upper-info a {
+    color:#fff;
+}
+
+#brand {
+    color:#ffffff;
+    font-size:22px;
+    margin-left:24px;
+}
+
+.navbar {
+    border-radius:0;
+    border-left:none;
+    border-right:none;
+}
+
+.navbar-default {
+    background-color: #6a7f10;
+    border-color: #B4BF88;
+}
+
+.navbar-default .navbar-nav>li>a, .navbar-default .navbar-brand {
+    color:#fff;
+}
+
+.navbar-default .navbar-nav>li>a:hover, .navbar-default .navbar-nav>li>a:focus, .navbar-default .navbar-brand:hover, .navbar-default .navbar-brand:focus {
+    color:#cdcdcd;
+}
+
+.navbar-default .navbar-nav>.open>a, .navbar-default .navbar-nav>.open>a:hover, .navbar-default .navbar-nav>.open>a:focus {
+    background-color:#ffffff;
+    color:#6a7f10;
+}
+
+.navbar-nav .open .dropdown-menu {
+    background-color:#ffffff;
+}
+
+#main {
+    background-color:#ffffff;
+    padding-bottom:16px;
+    padding-top:16px;
+}
+
+#mask-alert {
+    text-align:center;
+}

@@ -1,0 +1,8 @@
+/variables.py
+*.pyc
+/.env
+/media/*
+/tmp/*
+/.coverage
+/htmlcov
+/static

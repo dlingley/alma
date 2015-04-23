@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+
+<script src="{{ STATIC_URL }}js/calendar.js"></script>
+
+<button class="btn btn-default">Today</button>
+
+<div class="btn-group">
+    <a href="{% add_get week_offset=previous_week_offset %}" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span></a>
+    <a href="{% add_get week_offset=next_week_offset %}" class="btn btn-default"><span class="glyphicon glyphicon-chevron-right"></span></a>
+</div>
+
+<div id="calendar">
+    <div class="date-column">
+        <h6>&nbsp;</h6>
+        <div class="date-column-data">
+            {% for hour in hours %}
+                <div class="hour-marker">{{ hour }}</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% for date in dates %}
+        <div class="date-column {% if date == today %}today{% endif %}">
+            <h6>{{ date|date:"D n/j" }}</h6>
+            <div class="date-column-data">
+                <div class="request" data-start-time="1429737959" data-end-time="1429748989"></div>
+                <div class="request" data-start-time="1429749500" data-end-time="1429749550"></div>
+                {% for hour in hours %}
+                    <div class="hour-marker"></div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

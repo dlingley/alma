@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+{% comment %}
+The reason we are using this with statement here is because the view passes us
+the user object using a variable called "the_user" (to avoid clashing with the
+authentication template context processor). It is more convenient to use
+"user" in this part of the template though
+{% endcomment %}
+{% with user=the_user %}
+    <div class="pull-right">
+        {% if can_cloak %}
+            <form method="post" action="{% url 'cloak' user.pk %}">
+                {% csrf_token %}
+                <button class="btn btn-primary" type="submit">Masquerade</button>
+            </form>
+        {% endif %}
+    </div>
+    <h3>Hello {{ user }}</h3>
+    <p>Thanks for logging in! This is your page.</p>
+{% endwith %}
+{% endblock %}

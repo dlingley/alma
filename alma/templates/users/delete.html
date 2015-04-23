@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Delete {{ object }}</h3>
+
+<div class="alert alert-danger">
+    <h4>Are you sure you want to delete '{{ object }}'?</h4>
+
+    <p><strong><em>This action cannot be undone!</em></strong></p>
+
+    {% if related_objects.keys|length %}
+        <p>Related objects that will be deleted:</p>
+        <ul>
+            {% for cls, items in related_objects %}
+                <li>{{ items|length }} <strong>{{ cls|model_name }}</strong> object{{ items|length|pluralize}}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <hr />
+    <form method="post" id="delete-form">
+        {% csrf_token %}
+        <button class="btn btn-default" onclick="window.history.go(-1); return false">Cancel</button>
+        <button type="submit" name="finish" class="pull-right btn btn-danger" onclick="return confirm('Click OK if you are really sure')">Permanently Delete Preparation and All Related Objects</button>
+    </form>
+</div>
+
+{% endblock %}

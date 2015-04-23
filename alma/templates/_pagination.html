@@ -1,0 +1,22 @@
+<div class="">
+    <span class="step-links">
+        {% if items.number %}
+        <span class="pull-left current">
+            Page {{ items.number }} of {{ items.paginator.num_pages }}.
+        </span>
+        {% endif %}
+        <div class='pull-right btn-group'>
+            {% if items.has_previous %}
+                <a class='btn btn-default btn-xs prev' href="{% add_get page=items.previous_page_number %}">previous</a>
+            {% else %}
+                <a class='btn btn-default btn-xs disabled prev' href="#">previous</a>
+            {% endif %}
+            {% if items.has_next %}
+                <a class='btn btn-default btn-xs next' href="{% add_get page=items.next_page_number %}">next</a>
+            {% else %}
+                <a class='btn btn-default btn-xs disabled next' href="#">next</a>
+            {% endif %}
+        </div>
+    </span>
+    <div style='clear:both'></div>
+</div>

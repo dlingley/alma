@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="alert alert-danger">
+    <strong><big>403 Permission Denied</big></strong>
+    {% if request.permission_name %}
+        <p>You need the permission {{ request.permission_name }} to access this page.</p>
+    {% endif %}
+{% endblock %}
