@@ -19,6 +19,15 @@ class User(AbstractBaseUser):
         db_table = "user"
         ordering = ['last_name', 'first_name']
 
+    @classmethod
+    def username_to_email(cls, username):
+        return username + "@pdx.edu"
+
+    @property
+    def username(self):
+        return self.email.replace("@pdx.edu", "")
+
+
     def __str__(self):
         if self.last_name and self.first_name:
             return self.get_full_name()

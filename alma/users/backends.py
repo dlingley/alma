@@ -30,12 +30,6 @@ class PSUBackend(CASBackend):
         profile = ldap.parse_profile(entry)
         return profile
 
-
-    #def set_groups(self, user, groups):
-    #    for group in groups:
-    #        group, created = Group.objects.get_or_create(name=group)
-    #        user.groups.add(group)
-
     def get_groups(self, username):
         """
         Method to get the groups the user is involved in.

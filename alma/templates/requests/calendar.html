@@ -1,37 +1,51 @@
 {% extends "base.html" %}
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}datetimepicker/jquery.datetimepicker.css"/ >
+{% endblock %}
 {% block content %}
 
 <script src="{{ STATIC_URL }}js/calendar.js"></script>
+<script src="{{ STATIC_URL }}/datetimepicker/jquery.datetimepicker.js"></script>
+<script src="{{ STATIC_URL }}js/Please-compressed.js"></script>
 
-<button class="btn btn-default">Today</button>
-
-<div class="btn-group">
-    <a href="{% add_get week_offset=previous_week_offset %}" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span></a>
-    <a href="{% add_get week_offset=next_week_offset %}" class="btn btn-default"><span class="glyphicon glyphicon-chevron-right"></span></a>
-</div>
-
-<div id="calendar">
-    <div class="date-column">
-        <h6>&nbsp;</h6>
-        <div class="date-column-data">
-            {% for hour in hours %}
-                <div class="hour-marker">{{ hour }}</div>
-            {% endfor %}
-        </div>
-    </div>
-
-    {% for date in dates %}
-        <div class="date-column {% if date == today %}today{% endif %}">
-            <h6>{{ date|date:"D n/j" }}</h6>
-            <div class="date-column-data">
-                <div class="request" data-start-time="1429737959" data-end-time="1429748989"></div>
-                <div class="request" data-start-time="1429749500" data-end-time="1429749550"></div>
-                {% for hour in hours %}
-                    <div class="hour-marker"></div>
-                {% endfor %}
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="row">
+                <div class="col-md-6">
+                    {{ form.user|bootstrap }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.item|bootstrap }}
+                </div>
             </div>
-        </div>
-    {% endfor %}
+            <fieldset>
+                <legend>Create Request <span id="status-flag"></span></legend>
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form.starting_on|bootstrap }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.ending_on|bootstrap }}
+                    </div>
+                </div>
+                {{ form.repeat|bootstrap }}
+                <div id="repeat-info">
+                    {{ form.repeat_on|bootstrap }}
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.end_repeating_on|bootstrap }}
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            <button type="submit">Create Reservation</button>
+        </form>
+        <div id="user-requests"></div>
+    </div>
+    <div class="col-md-8" id="calendar-wrapper"></div>
 </div>
 
 {% endblock %}

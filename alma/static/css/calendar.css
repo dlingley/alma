@@ -1,50 +1,143 @@
-.date-column {
-    float:left;
-    width:12%;
-    vertical-align:top;
-    padding:0px;
-    margin:0;
-}
-
-#calendar .date-column:first-child {
-    width:45px;
-    text-align:right;
-    font-size:11px;
-}
-
-#calendar .date-column:first-child .hour-marker {
-    padding-right:5px;
-}
-
-#calendar h6 {
-    text-align:center;
-}
-
-.date-column-data {
-    height:1080px; /* 24 hours * 45px per hour */
-    vertical-align:top;
-    position:relative;
+#calendar {
+    width:100%;
+    margin-top:10px;
 }
 
 .request {
-    background-color:#ff8800;
-    min-height:10px;
+    height:10px;
     z-index:10;
-    width:90%;
+    margin-top:2px;
+    position:absolute;
+    font-size:11px;
+    overflow:hidden;
+    font-family:Arial;
+    cursor:pointer;
+    background-color:#ccc;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0),  rgba(255, 255, 255, .5));
 }
 
 .hour-marker {
-    height:45px;
-    border-top:1px solid #ddd;
+    width:4.16%; /* 100% / 24 hours in a day */
     border-left:1px solid #ddd;
+    border-bottom:1px solid #ddd;
+    border-collapse:collapse;
     z-index:0;
+    float:left;
+    min-height:30px;
+}
+
+.today {
+    background-color:#eee;
+}
+
+#calendar th {
+    width:75px;
+    text-align:right;
+    padding-right:5px;
+    font-weight:normal;
+    font-size:14px;
+}
+
+#calendar td {
     position:relative;
 }
 
-#calendar .date-column:last-child .hour-marker{
-    border-right:1px solid #ddd;
+#calendar th.separator {
+    background-color:#6A7F10;
+    color:#fff;
+    font-size:16px;
+    font-weight:bold;
+    text-align:center;
+    padding:3px;
+    margin:5px;
 }
 
-.today .hour-marker {
-    background-color:#eee;
+#calendar tr:hover {
+    background-color:#efefef;
+}
+
+#id_repeat_on {
+    padding-left:0;
+    margin-left:0;
+}
+
+#id_repeat_on li {
+    display:inline-block;
+    list-item-type:none;
+    padding-right:5px;
+}
+
+#id_repeat_on input {
+    margin-left:-15px;
+}
+
+#id_repeat_on label {
+    padding-left:15px;
+    padding-right:3px;
+}
+
+.sunday {
+    border-top:1px solid black;
+}
+
+.week-marker {
+    background-color:#efefef;
+}
+
+.week-marker .hour-marker {
+    font-size:11px;
+    text-align:left;
+    min-height:10px;
+    height:auto;
+    border:none;
+    text-indent:-12px;
+}
+
+.request.reserved {
+    background-color:#B4BF88;
+}
+
+.request.loaned {
+    background-color:#DDB1AA;
+}
+
+.request.returned {
+    background-color:#ccc;
+}
+
+.request.unhighlighted {
+    opacity:.2;
+}
+
+.request.item-match, .request.user-match {
+    opacity:1;
+}
+
+.request.user-match {
+    border:1px dashed #6A7F10;
+}
+
+.popover p {
+    margin-top:10px;
+}
+
+.show-on-delete {
+    display:none;
+}
+
+.show-on-delete .btn {
+    margin-top:3px;
+}
+
+#user-requests .state-toggle {
+    float:right;
+    padding-left:10px;
+}
+
+#user-requests .delete-box {
+    float:left;
+}
+
+#user-requests {
+    margin-top:30px;
 }

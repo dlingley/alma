@@ -21,29 +21,6 @@ body {
     margin-top:60px;
 }
 
-#header {
-    padding-top:24px;
-    padding-bottom:24px;
-}
-
-#upper-info {
-    float: right;
-    color: #fff;
-    font-size: 12px;
-    padding-top:5px;
-    margin-top:-24px; /* these needs to be the negative of #header padding-top */
-}
-
-#upper-info a {
-    color:#fff;
-}
-
-#brand {
-    color:#ffffff;
-    font-size:22px;
-    margin-left:24px;
-}
-
 .navbar {
     border-radius:0;
     border-left:none;
@@ -80,4 +57,8 @@ body {
 
 #mask-alert {
     text-align:center;
+}
+
+.check-all {
+    display:none;
 }

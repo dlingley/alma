@@ -2,7 +2,7 @@ import os
 from fnmatch import fnmatch
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.messages import constants as messages
-from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP, AUTHENTICATION_BACKENDS
+from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP, AUTHENTICATION_BACKENDS, DATETIME_INPUT_FORMATS
 from varlet import variable
 
 
@@ -121,6 +121,8 @@ MESSAGE_TAGS = {
 
 ITEMS_PER_PAGE = 100
 
+DATETIME_INPUT_FORMATS = ("%m/%d/%Y %I:%M %p",) + DATETIME_INPUT_FORMATS
+
 
 # Application definition
 
@@ -133,9 +135,12 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    #'debug_toolbar',
     'permissions',
     'arcutils',
     'alma.users',
+    'alma.items',
+    'alma.requests',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -192,3 +197,16 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
     DJANGO_DIR("templates"),
 )
+
+# using the cached template loader improves performance quite a bit
+#TEMPLATE_LOADERS = (
+#    ('django.template.loaders.cached.Loader', (
+#        'django.template.loaders.filesystem.Loader',
+#        'django.template.loaders.app_directories.Loader',
+#    )),
+#)
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    }
+}

@@ -1,0 +1,29 @@
+<form action="{% url 'requests-change-status' interval.pk %}" method="post" class="request-interval-form">
+    {% for interval, status_field, delete_field, delete_choice_field in form %}
+        <div class="btn-group state-toggle" data-toggle="buttons">
+            {% for choice in status_field %}
+            <label class="btn btn-primary btn-sm {% if choice.is_checked %}active{% endif %}">
+                {{ choice.tag }} {{ choice.choice_label }}
+            </label>
+            {% endfor %}
+        </div>
+
+        <p>
+        Reservation #{{ interval.pk }} by <a href="#">{{ interval.request.user.username }}</a> for <em>{{ interval.request.item }}</em>
+        from <strong>{{ interval.start|date:"P" }}</strong> until <strong>{{ interval.end|date:"P" }}</strong>
+        {% if interval.request.repeat_on %}
+            repeating on {{ days }} starting on {{ interval.request.requestview.first_interval.start|date:"D, F j, Y" }} and ending on {{ interval.request.requestview.last_interval.start|date:"D, F j, Y" }}.
+        {% endif %}
+        </p>
+
+        <div class="form-inline delete-box">
+            {{ delete_field|bootstrap }}
+            <span class="show-on-delete">
+                {{ delete_choice_field|bootstrap }}
+                <button type="submit" class="btn btn-danger btn-block btn-sm">Delete</button>
+            </span>
+        </div>
+    {% endfor %}
+</form>
+
+

@@ -1,0 +1,49 @@
+{% load cache %}
+<button class="btn btn-default" onclick='$(body).trigger("calendar:reload", [0])'>Today</button>
+
+<div class="btn-group">
+    <button class="btn btn-default" onclick='$(body).trigger("calendar:reload", [{{ previous_page }}])'><span class="glyphicon glyphicon-chevron-left"></span></button>
+    <button class="btn btn-default" onclick='$(body).trigger("calendar:reload", [{{next_page}}])'><span class="glyphicon glyphicon-chevron-right"></span></button>
+</div>
+
+<table id="calendar">
+    <tbody>
+        {% for month, dates in calendar.items %}
+            <tr>
+                <th colspan="2" class="separator">{{ month|date:"M Y" }}</th>
+            </tr>
+            {% for date, intervals in dates.items %}
+                {% cache 50000 row6 intervals %}
+                    {% if date|date:"D" == "Sun" %}
+                        <tr class="week-marker">
+                            <td>&nbsp;</td>
+                            <td>
+                                {% for hour in hours %}
+                                    <div class="hour-marker">{{ hour }}</div>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                    {% endif %}
+                    <tr class="{% if date == today %}today{% endif %}">
+                        <th>{{ date|date:"D n/j" }}</th>
+                        <td>
+                            {% for interval in intervals %}
+                                <div
+                                    class="request {{ interval.get_state_display|lower }}"
+                                    style="{{ interval.css }}"
+                                    data-username="{{ interval.request.user.username }}"
+                                    data-barcode="{{ interval.request.item.barcode }}"
+                                    data-toggle="popover"
+                                    data-content="{% if interval.parent %}{{ interval.parent.escaped_html }}{% else %}{{ interval.escaped_html }} {% endif %}"
+                                >{% if interval.parent %}...{% endif %}{{ interval.request.user.username }}</div>
+                            {% endfor %}
+                            {% for hour in hours %}
+                                <div class="hour-marker" style="height: {{ intervals.height }}px"></div>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                {% endcache %}
+            {% endfor %}
+        {% endfor %}
+    </tbody>
+</table>

@@ -19,9 +19,14 @@ urlpatterns = patterns(
 
     # the homepage goes straight to a template. But you may want to change this
     # into a normal view function
-    url(r'^$', requests.calendar, name='home'),
+    url(r'^$', requests.main, name='home'),
     url(r'^login/?$', 'djangocas.views.login', name="login"),
     url(r'^logout/?$', 'djangocas.views.logout', name="logout"),
+
+    url(r'^requests/calendar/?$', requests.calendar, name='requests-calendar'),
+    url(r'^requests/available/?$', requests.available, name='requests-available'),
+    url(r'^requests/user/?$', requests.user, name='requests-user'),
+    url(r'^requests/change_status/(?P<request_interval_id>\d+)?$', requests.change_status, name='requests-change-status'),
 
     # Here we define all the URL routes for the users app. Technically, you
     # could put these routes in the app itself, but for non-reusable apps, we

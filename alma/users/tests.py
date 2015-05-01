@@ -1,3 +1,4 @@
+from datetime import date
 from unittest.mock import Mock, patch
 from model_mommy.mommy import make, prepare
 
@@ -8,7 +9,25 @@ from .models import User
 from .forms import UserForm
 from .views import detail
 from .perms import permissions
+from .utils import is_ldap_user
 
+thing = lambda date, repeat_on: (2**((date.weekday()+1)%7)) & repeat_on
+
+class TestThing(TestCase):
+    def test(self):
+        self.assertTrue(thing(date(year=2015, month=4, day=19), 1))
+        self.assertTrue(thing(date(year=2015, month=4, day=20), 2))
+        self.assertTrue(thing(date(year=2015, month=4, day=21), 4))
+        self.assertTrue(thing(date(year=2015, month=4, day=22), 8))
+        self.assertTrue(thing(date(year=2015, month=4, day=23), 16))
+        self.assertTrue(thing(date(year=2015, month=4, day=24), 32))
+        self.assertTrue(thing(date(year=2015, month=4, day=25), 64))
+
+
+class IsLdapUserTest(TestCase):
+    def test(self):
+        self.assertTrue(is_ldap_user("mdj2"))
+        self.assertFalse(is_ldap_user("mdj2222"))
 
 class DetailViewTest(TestCase):
     """
