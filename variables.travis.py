@@ -16,7 +16,7 @@ HOSTNAME = '10.0.0.5:8000'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # the default is fine for dev
-DB_USER = 'root'
+DB_USER = 'postgres'
 
 # the default is fine for dev
 DB_PASSWORD = ''
