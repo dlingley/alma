@@ -56,25 +56,38 @@ $(document).ready(function(){
 
     // create an event to redraw the display of the calendar
     $('body').on("calendar:redraw", function(e){
-        var username = $('#id_user').val();
-        var barcode = $('#id_item').val();
+        var username = $.trim($('#id_user').val());
+        var item = $.trim($('#id_item').val());
+
+        // parse out the username from what they inputted
+        username = /\((.*)\)$/.exec(username)
+        if(username != null){
+            username = username[1];
+        }
+
+        // parse out the item id from what they inputted
+        item = /\((.*)\)$/.exec(item)
+        if(item != null){
+            item = item[1];
+        }
+
         // remove all the indicator classes
         $('.request').removeClass("user-match item-match unhighlighted");
 
-        // if we have a username or barcode entered, we need to unhighlight all
+        // if we have a username or item entered, we need to unhighlight all
         // the requests
-        if($.trim(username) != "" || $.trim(barcode) != ""){
+        if(username || item){
             $('.request').addClass("unhighlighted");
         }
 
         // un-unhighlight anything that matches the username
-        if($.trim(username) != ""){
+        if(username){
             $('.request[data-username="' + username + '"]').addClass("user-match");
         }
 
         // un-unhighlight anything that matches the item
-        if($.trim(barcode) != ""){
-            $('.request[data-barcode="' + barcode + '"]').addClass("item-match");
+        if(item){
+            $('.request[data-item-id="' + item + '"]').addClass("item-match");
         }
     });
 
@@ -168,4 +181,41 @@ $(document).ready(function(){
 
     // load the calendar when the page first loads
     $('body').trigger("calendar:reload");
+
+    $('#id_item').typeahead({}, {
+        source: function(query, syncResults, asyncResults){
+            $.get("/items/autocomplete", {query: query}, asyncResults);
+        },
+        display: function(item){
+            return item.name + " (" + item.item_id + ")"
+        },
+        templates: {
+            suggestion: function(item){
+                return "<div><strong>" + item.name + "</strong><br />" + item.description + "<em> #" + item.item_id + "</em></div>"
+            }
+        }
+    }).on("typeahead:select", function(){
+        $('body').trigger("calendar:redraw");
+    })
+
+    $('#id_user').typeahead({}, {
+        source: function(query, syncResults, asyncResults){
+            $.get("/users/autocomplete", {query: query}, function(results){
+                console.log(results)
+                asyncResults(results);
+            });
+        },
+        display: function(user){
+            console.log("here")
+            return user.full_name + " (" + user.odin + ")"
+        },
+        templates: {
+            suggestion: function(user){
+                console.log("here2")
+                return "<div><strong>" + user.full_name +  "</strong><br />" + user.odin + "</div>"
+            }
+        }
+    }).on("typeahead:select", function(){
+        $('body').trigger("calendar:redraw");
+    })
 });

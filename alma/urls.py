@@ -5,6 +5,7 @@ from django.conf import settings
 from django.views.generic import TemplateView
 from .users import views as users
 from .requests import views as requests
+from .items import views as items
 
 admin.autodiscover()
 
@@ -23,6 +24,8 @@ urlpatterns = patterns(
     url(r'^login/?$', 'djangocas.views.login', name="login"),
     url(r'^logout/?$', 'djangocas.views.logout', name="logout"),
 
+    url(r'^items/autocomplete/?$', items.autocomplete, name='items-autocomplete'),
+
     url(r'^requests/calendar/?$', requests.calendar, name='requests-calendar'),
     url(r'^requests/available/?$', requests.available, name='requests-available'),
     url(r'^requests/user/?$', requests.user, name='requests-user'),
@@ -37,6 +40,7 @@ urlpatterns = patterns(
     url(r'^users/create/?$', users.create, name='users-create'),
     url(r'^users/edit/(?P<user_id>\d+)/?$', users.edit, name='users-edit'),
     url(r'^users/delete/(?P<user_id>\d+)/?$', users.delete, name='users-delete'),
+    url(r'^users/autocomplete/?$', users.autocomplete, name='users-autocomplete'),
 
     # these url routes are useful for password reset functionality and logging in and out
     # https://github.com/django/django/blob/master/django/contrib/auth/urls.py

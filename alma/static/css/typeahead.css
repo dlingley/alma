@@ -1,0 +1,44 @@
+.typeahead,
+.tt-query,
+.twitter-typeahead {
+    display:block !important;
+}
+
+.tt-hint {
+}
+
+.typeahead {
+    background-color: #fff;
+}
+
+.typeahead:focus {
+    border: 2px solid #0097cf;
+}
+
+.tt-hint {
+    color: #999
+}
+
+.tt-menu {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    width:100%;
+}
+
+.tt-suggestion {
+    font-size: 12px;
+    padding:3px;
+}
+
+.tt-suggestion:hover {
+    cursor: pointer;
+    color: #fff;
+    background-color: #0097cf;
+}
+
+.tt-suggestion.tt-cursor {
+    color: #fff;
+    background-color: #0097cf;
+
+}

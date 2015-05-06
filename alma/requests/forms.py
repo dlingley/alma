@@ -1,3 +1,4 @@
+import re
 from datetime import timedelta
 from django.utils.timezone import now
 from django import forms
@@ -38,8 +39,17 @@ class RequestForm(forms.ModelForm):
         """
         Makes sure the user is in LDAP, and creates the user in the system if
         it doesn't exist already
+
+        The user is submitted as something like "Matt Johnson (mdj2)", so we
+        have to parse out the "mdj2" part
         """
-        user = self.cleaned_data['user']
+        user = self.cleaned_data['user'].strip()
+        matches = re.search(r"\((.+)\)$", user)
+        if not matches:
+            raise forms.ValidationError("user must be of the form 'name (odin)'")
+
+        user = matches.group(1)
+
         if not is_ldap_user(user):
             raise forms.ValidationError("Not a valid ODIN username")
 
@@ -56,13 +66,20 @@ class RequestForm(forms.ModelForm):
     def clean_item(self):
         """
         Ensures the item exists in the system
+
+        The item is submitted as something like "VGA Cable (1234abc)", so we
+        have to parse out the "1234abc" part
         """
-        item = self.cleaned_data['item']
+        item = self.cleaned_data['item'].strip()
+        matches = re.search(r"\((.+)\)$", item)
+        if not matches:
+            raise forms.ValidationError("Item must be of the form 'item name (item_id)'")
+
+        item = matches.group(1)
         try:
-            item = Item.objects.get(barcode=item)
+            item = Item.objects.get(pk=item)
         except Item.DoesNotExist:
-            item = Item(name=item, barcode=item)
-            item.save()
+            raise forms.ValidationError("Item does not exist")
 
         return item
 
