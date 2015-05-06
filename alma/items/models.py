@@ -1,4 +1,5 @@
 from django.db import models
+from .indexes import ItemIndex
 
 class Item(models.Model):
     item_id = models.CharField(max_length=255, primary_key=True)
@@ -9,6 +10,8 @@ class Item(models.Model):
     # this could be made into a foreign key, but this table is just caching
     # what's in Alma
     category = models.CharField(max_length=255)
+
+    search = ItemIndex()
 
     class Meta:
         db_table = "item"

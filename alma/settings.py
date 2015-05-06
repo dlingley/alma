@@ -109,6 +109,44 @@ DATABASES = {
     },
 }
 
+#
+# Elaticsearch
+#
+
+ELASTICSEARCH_CONNECTIONS = {
+    'default': {
+        'HOSTS': ['http://localhost:9200',],
+        'INDEX_NAME': 'alma',
+        'SETTINGS': {
+            "analysis": {
+                "analyzer": {
+                    "default": {
+                        "type": "custom",
+                        "tokenizer": "standard",
+                        "filter": [
+                            "standard",
+                            "underscore",
+                            "lowercase",
+                            "simple_edge"
+                        ]
+                    }
+                },
+                "filter": {
+                    "simple_edge": {
+                        "type" : "edgeNGram",
+                        "min_gram" : "2",
+                        "max_gram" : "3",
+                    },
+                    "underscore": {
+                        "type": "pattern_capture",
+                        "patterns": ["([^_]+)"]
+                    }
+                }
+            }
+        }
+    }
+}
+
 LOGGING_CONFIG = 'arcutils.logging.basic'
 
 #
@@ -138,6 +176,7 @@ INSTALLED_APPS = (
     #'debug_toolbar',
     'permissions',
     'arcutils',
+    'elasticmodels',
     'alma.users',
     'alma.items',
     'alma.requests',
