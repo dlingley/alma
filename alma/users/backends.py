@@ -2,6 +2,7 @@ import sys, os
 from arcutils import ldap
 from djangocas.backends import CASBackend
 from django.core.exceptions import PermissionDenied
+from django.utils.timezone import now
 from .models import User
 
 LOGIN_GROUPS = ['arc']
@@ -18,7 +19,7 @@ class PSUBackend(CASBackend):
             user = User.objects.get(email=email)
         except User.DoesNotExist:
             profile = self.get_profile(username)
-            user = User(email=email, first_name=profile['first_name'], last_name=profile['last_name'], is_active=True, is_staff=False)
+            user = User(email=email, first_name=profile['first_name'], last_name=profile['last_name'], is_active=True, is_staff=False, last_login=now())
             user.set_unusable_password()
             user.save()
 
