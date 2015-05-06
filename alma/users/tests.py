@@ -26,8 +26,10 @@ class TestThing(TestCase):
 
 class IsLdapUserTest(TestCase):
     def test(self):
-        self.assertTrue(is_ldap_user("mdj2"))
-        self.assertFalse(is_ldap_user("mdj2222"))
+        with patch("alma.users.utils.ldapsearch", return_value=['mdj2']):
+            self.assertTrue(is_ldap_user("mdj2"))
+        with patch("alma.users.utils.ldapsearch", return_value=[]):
+            self.assertFalse(is_ldap_user("mdj2222"))
 
 class DetailViewTest(TestCase):
     """

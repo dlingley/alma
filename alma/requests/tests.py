@@ -118,8 +118,9 @@ class RequestFormTest(TestCase):
         form = RequestForm()
         form.cleaned_data = {'user': "_asdf"}
         self.assertRaises(ValidationError, form.clean_user)
-        form.cleaned_data = {'user': "mdj2"}
-        form.clean_user()
+        form.cleaned_data = {'user': "matt (mdj2)"}
+        with patch("alma.requests.forms.is_ldap_user", return_value=True):
+            form.clean_user()
         self.assertTrue(User.objects.filter(email="mdj2@pdx.edu").exists())
         self.assertFalse(User.objects.get(email="mdj2@pdx.edu").is_active)
 
@@ -172,33 +173,39 @@ class RequestFormTest(TestCase):
         self.assertIn("The end repeating on date must be greater than the starting on date", str(form.errors))
 
         # if there are no errors on the form, the availability should be checked
+        item = make(Item)
         data = {
-            "item": "foo",
-            "user": "mdj2",
+            "item": "foo (%s)" % (item.pk) ,
+            "user": "Matt (mdj2)",
             "starting_on": datetime(year=2012, month=12, day=12),
             "ending_on": datetime(year=2012, month=12, day=13),
         }
         with patch("alma.requests.forms.Request.objects.is_available", return_value=True):
-            form = RequestForm(data)
-            self.assertTrue(form.is_valid())
+            with patch("alma.requests.forms.is_ldap_user", return_value=True):
+                form = RequestForm(data)
+                self.assertTrue(form.is_valid())
 
         with patch("alma.requests.forms.Request.objects.is_available", return_value=False):
-            form = RequestForm(data)
-            self.assertFalse(form.is_valid())
+            with patch("alma.requests.forms.is_ldap_user", return_value=True):
+                form = RequestForm(data)
+                self.assertFalse(form.is_valid())
 
     def test_save(self):
         dt = now()
         dt = dt.replace(year=2015, month=1, day=5, hour=10, minute=10, second=10)
+        item = make(Item)
         form = RequestForm(data={
             "starting_on": dt,
             "ending_on": dt+timedelta(hours=2),
             "end_repeating_on": dt+timedelta(days=7),
-            "user": 'mdj2',
-            "item": 'foo',
+            "user": 'foo (mdj2)',
+            "item": 'foo (%s)' % item.pk,
             "repeat_on": [DayOfWeek.MONDAY, DayOfWeek.FRIDAY],
             "repeat": 1,
         })
         created_by = make(User)
-        request = form.save(created_by=created_by)
+
+        with patch("alma.requests.forms.is_ldap_user", return_value=True):
+            request = form.save(created_by=created_by)
         self.assertEqual(request.created_by, created_by)
         self.assertEqual(RequestInterval.objects.count(), 3)
