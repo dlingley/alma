@@ -14,6 +14,11 @@ DJANGO_DIR = lambda *path: os.path.normpath(os.path.join(os.path.dirname(__file_
 BASE_DIR = lambda *path: DJANGO_DIR("../", *path)
 
 #
+# Keys
+#
+ALMA_API_KEY = variable("ALMA_API_KEY")
+
+#
 # System and Debugging
 #
 
