@@ -48,8 +48,8 @@ SECRET_KEY = variable("SECRET_KEY", os.urandom(64).decode("latin1"))
 HOSTNAME = variable("HOSTNAME", default="10.0.0.10.xip.io:8000")
 # we construct the SESSION_COOKIE_DOMAIN based on the hostname. We prepend a
 # dot so the cookie is set for all subdomains
-SESSION_COOKIE_DOMAIN = HOSTNAME.split(":")[0]
-ALLOWED_HOSTS = [SESSION_COOKIE_DOMAIN]
+#SESSION_COOKIE_DOMAIN = HOSTNAME.split(":")[0]
+#ALLOWED_HOSTS = [SESSION_COOKIE_DOMAIN]
 
 #
 # Test Stuff
@@ -120,35 +120,8 @@ DATABASES = {
 
 ELASTICSEARCH_CONNECTIONS = {
     'default': {
-        'HOSTS': ['http://localhost:9200',],
-        'INDEX_NAME': 'alma',
-        'SETTINGS': {
-            "analysis": {
-                "analyzer": {
-                    "default": {
-                        "type": "custom",
-                        "tokenizer": "standard",
-                        "filter": [
-                            "standard",
-                            "underscore",
-                            "lowercase",
-                            "simple_edge"
-                        ]
-                    }
-                },
-                "filter": {
-                    "simple_edge": {
-                        "type" : "edgeNGram",
-                        "min_gram" : "2",
-                        "max_gram" : "3",
-                    },
-                    "underscore": {
-                        "type": "pattern_capture",
-                        "patterns": ["([^_]+)"]
-                    }
-                }
-            }
-        }
+        'hosts': ['http://localhost:9200',],
+        'index_name': 'alma',
     }
 }
 
@@ -185,6 +158,7 @@ INSTALLED_APPS = (
     'alma.users',
     'alma.items',
     'alma.requests',
+    'alma.loans',
 )
 
 MIDDLEWARE_CLASSES = (

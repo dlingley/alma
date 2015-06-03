@@ -1,4 +1,3 @@
-import sys, os
 from arcutils import ldap
 from djangocas.backends import CASBackend
 from django.core.exceptions import PermissionDenied

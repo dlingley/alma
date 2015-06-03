@@ -1,27 +1,27 @@
-import copy
 from collections import OrderedDict
 from datetime import date, timedelta
-from django.db.models import Q
-from django.utils.timezone import now, localtime
+from django.utils.timezone import now
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from alma.users.models import User
-from .models import RequestInterval
-from .forms import RequestForm, RequestIntervalChangeForm
-from .utils import RequestIntervalContainerForTemplate
+from alma.alma.api import is_available
+from alma.loans.models import Loan
+from .forms import OmniForm, RequestChangeForm
+from .utils import CalendarItemContainerForTemplate, CalendarItem
+from .models import iter_intervals, Request
 
 DAYS_TO_SHOW = 90
 
 def main(request):
     """Display the main calendar view"""
     if request.method == "POST":
-        form = RequestForm(request.POST)
+        form = OmniForm(request.POST)
         if form.is_valid():
             form.save(created_by=request.user)
             return redirect("home")
     else:
-        form = RequestForm()
+        form = OmniForm()
 
     return render(request, "requests/calendar.html", {
         "form": form,
@@ -29,9 +29,9 @@ def main(request):
 
 
 @csrf_exempt # TODO fix this
-def change_status(request, request_interval_id):
-    interval = get_object_or_404(RequestInterval, pk=request_interval_id)
-    form = RequestIntervalChangeForm(request.POST, intervals=[interval])
+def change_status(request, request_id):
+    req = get_object_or_404(Request, pk=request_id)
+    form = RequestChangeForm(request.POST, requests=[req])
     if form.is_valid():
         form.save()
     return HttpResponse()
@@ -43,20 +43,17 @@ def user(request):
     checked out
     """
     email = User.username_to_email(request.GET.get("username", ""))
-    intervals = RequestInterval.objects.filter(request__user__email=email).filter(Q(
-        end__lte=now()+timedelta(hours=8),
+    requests = Request.objects.filter(reservation__user__email=email).filter(
+        end__lte=now()+timedelta(hours=10000),
         end__gte=now()
-        ) | Q(state=RequestInterval.LOANED)
     ).select_related(
-        "request",
-        "request__item",
-        "request__user",
-        "request__requestview__first_interval",
-        "request__requestview__last_interval"
+        "reservation",
+        "reservation__bib",
+        "reservation__user",
     )
 
     return render(request, "requests/_user.html", {
-        "intervals": intervals,
+        "requests": requests,
     })
 
 
@@ -65,14 +62,47 @@ def available(request):
     This is a little hacky, but it checks to see if the
     """
     if request.method == "POST":
-        data = request.POST.copy()
-        data['user'] = request.user.username
-        form = RequestForm(data)
-        if form.is_valid():
-            return HttpResponse("available")
-        elif [error for error in form.errors.as_data().get("__all__", []) if error.code == "unavailable"]:
-            return HttpResponse("unavailable")
-        print(form.errors)
+        form = OmniForm(request.POST)
+        form.is_valid()
+        # these are the fields that need to be valid if we can successfully check for availability
+        necessary_fields = ['bibs_or_item', 'starting_on', 'ending_on', 'repeat', 'repeat_on', 'end_repeating_on']
+        for field in necessary_fields:
+            if field in form.errors:
+                return HttpResponse("notvalid")
+
+        # these fields must not be falsy
+        truthy_fields = ['starting_on', 'ending_on']
+        for field in truthy_fields:
+            if not form.cleaned_data.get(field):
+                return HttpResponse("notvalid")
+
+        if form.action_to_take_on_save() != "reserving":
+                return HttpResponse("notvalid")
+
+        intervals = list(iter_intervals(
+            form.cleaned_data['starting_on'],
+            form.cleaned_data['ending_on'],
+            form.cleaned_data['end_repeating_on'],
+            form.cleaned_data['repeat_on']
+        ))
+
+        output = []
+        for interval in intervals:
+            output.append({
+                "start": interval[0],
+                "end": interval[1],
+                "items": []
+            })
+
+        for bib in form.cleaned_data['bibs_or_item']:
+            results = list(is_available(bib.mms_id, intervals))
+            for data, is_avail in zip(output, results):
+                data['items'].append({"name": str(bib), "is_available": is_avail})
+
+        return render(request, "requests/_availability.html", {
+            "request_blocks": output,
+        })
+
     return HttpResponse("notvalid")
 
 
@@ -80,14 +110,14 @@ def calendar(request):
     # get the first Sunday of the week
     try:
         page = int(request.GET.get("page", 0))
-    except (TypeError, ValueError) as e:
+    except (TypeError, ValueError):
         page = 0
 
     start_date = date.today() - timedelta(days=(date.today().weekday()+1)) + timedelta(days=page*DAYS_TO_SHOW)
 
     # `calendar` is a ordereddict where the key is a date object (of the first of
     # the month), and the value is an ordered dict where the key is a date, and
-    # the value is a RequestIntervalContainerForTemplate object
+    # the value is a CalendarItemContainerForTemplate object
     calendar = OrderedDict()
     day = start_date
 
@@ -97,7 +127,7 @@ def calendar(request):
         if month not in calendar:
             calendar[month] = OrderedDict()
 
-        calendar[month][day] = RequestIntervalContainerForTemplate(day=day)
+        calendar[month][day] = CalendarItemContainerForTemplate(day=day)
         day += timedelta(days=1)
 
     # the end_date is one day ahead of where we want to stop. That's OK, since
@@ -105,39 +135,34 @@ def calendar(request):
     # in the queryset filter below
     end_date = day
 
-    # find all the RequestIntervals in this date range
-    intervals = list(RequestInterval.objects.filter(
+    # find all the Requests in this date range, and convert them into CalendarItem objects
+    calendar_items = [CalendarItem.from_request(req) for req in Request.objects.filter(
         end__lt=end_date,
         start__gte=start_date
     ).select_related(
-        "request",
-        "request__item",
-        "request__user",
-        "request__requestview",
-        "request__requestview__first_interval",
-        "request__requestview__last_interval"
-    ).order_by("pk"))
+        "reservation",
+        "reservation__bib",
+        "reservation__user",
+    ).order_by("pk")]
+
+    # do the same for Loan objects
+    calendar_items.extend(CalendarItem.from_loan(loan) for loan in Loan.objects.filter(
+        returned_on=None,
+        loaned_on__gte=start_date,
+        loaned_on__lt=end_date
+    ).select_related("item"))
 
     i = 0
-    while i < len(intervals):
-        interval = intervals[i]
-        # Get the right RequestIntervalList object from the calendar
-        start = localtime(interval.start)
-        end = localtime(interval.end)
-        request_interval_list = calendar[start.date().replace(day=1)][start.date()]
+    while i < len(calendar_items):
+        calendar_item = calendar_items[i]
+        request_list = calendar[calendar_item.start.date().replace(day=1)][calendar_item.start.date()]
 
-        # we need to split this interval into two pieces
-        if end.date() > start.date():
-            new_request_interval = copy.copy(interval)
-            new_request_interval.start = start.replace(hour=0, minute=0, second=0)+timedelta(days=1)
-            new_request_interval.parent = interval
-            intervals.append(new_request_interval)
+        # we need to split this calendar_item into two pieces since it spans multiple days
+        if calendar_item.end.date() > calendar_item.start.date():
+            calendar_items.append(calendar_item.split())
 
-            end = start.replace(hour=23, minute=59, second=59)
-
-        request_interval_list.add(interval)
+        request_list.add(calendar_item)
         i += 1
-
 
     hours = ["12am"] + [t+"am" for t in map(str, range(1, 12))] + ["12pm"] + [t+"pm" for t in map(str, range(1, 12))]
     return render(request, "requests/_calendar.html", {
@@ -147,5 +172,5 @@ def calendar(request):
         "page": page,
         "next_page": page+1,
         "previous_page": page-1,
-        "intervals": intervals,
+        "intervals": calendar_items,
     })

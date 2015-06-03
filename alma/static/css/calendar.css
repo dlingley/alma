@@ -1,9 +1,13 @@
+#calendar-wrapper {
+    background-color:#fff;
+}
+
 #calendar {
     width:100%;
     margin-top:10px;
 }
 
-.request {
+.calendar-item {
     height:10px;
     z-index:10;
     margin-top:2px;
@@ -12,8 +16,8 @@
     overflow:hidden;
     font-family:Arial;
     cursor:pointer;
-    background-color:#ccc;
     background: linear-gradient(to right, rgba(255, 255, 255, 0),  rgba(255, 255, 255, .5));
+    background-color:#ccc;
 }
 
 .hour-marker {
@@ -93,27 +97,23 @@
     text-indent:-12px;
 }
 
-.request.reserved {
+.calendar-item.request {
     background-color:#B4BF88;
 }
 
-.request.loaned {
+.calendar-item.loan {
     background-color:#DDB1AA;
 }
 
-.request.returned {
-    background-color:#ccc;
-}
-
-.request.unhighlighted {
+.calendar-item.unhighlighted {
     opacity:.2;
 }
 
-.request.item-match, .request.user-match {
+.calendar-item.item-match, .calendar-item.user-match {
     opacity:1;
 }
 
-.request.user-match {
+.calendar-item.user-match {
     border:1px dashed #6A7F10;
 }
 
@@ -140,4 +140,8 @@
 
 #user-requests {
     margin-top:30px;
+}
+
+.not-available {
+    text-decoration: line-through;
 }

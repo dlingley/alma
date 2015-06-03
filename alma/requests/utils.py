@@ -1,31 +1,98 @@
-from django.utils.timezone import localtime
+import copy
+from django.utils.timezone import localtime, now
 from itertools import chain
 from collections import OrderedDict
+from datetime import timedelta
 
 NUMBER_OF_SECONDS_IN_A_DAY = 60*60*24
 PERCENTS_PER_SECOND = 100.0/NUMBER_OF_SECONDS_IN_A_DAY
 
-class RequestIntervalContainerForTemplate:
+
+class CalendarItem:
     """
-    This is a special container for RequestInterval objects on a particular
-    day. When an interval is added to the list, this object will augment
-    the RequestInterval object with a few attributes necessary to render
-    the interval on a template.
+    This provides an interface to display Loan objects or Request objects on
+    the calendar
+    """
+    @classmethod
+    def from_request(cls, request):
+        """Create an instance of this class from a Request object"""
+        return cls(
+            start=request.start,
+            end=request.end,
+            user=request.reservation.user,
+            bib=request.reservation.bib,
+            model=request,
+        )
+
+    @classmethod
+    def from_loan(cls, loan):
+        """Create an instance of this class from a Loan object"""
+        return cls(
+            start=loan.loaned_on,
+            # since the loan hasn't been returned, it's end date is whatever
+            # the current time is
+            end=now(),
+            user=loan.user,
+            item=loan.item,
+            model=loan,
+        )
+
+    def __init__(self, model, start, end, user, item=None, bib=None, parent=None):
+        # datetime objects need to be converted to localtime so .date() works
+        # as expected
+        self.start = localtime(start)
+        self.end = localtime(end)
+
+        self.user = user
+        self.item = item
+        self.bib = bib
+        self.model = model
+        # If this CalendarItem gets split up because it spans multiple days,
+        # this `parent` attribute references the parent CalendarItem it was
+        # split from. The object itself isn't that useful, but just knowing this CalendarItem
+        # was split is useful for styling it
+        self.parent = parent
+
+        # this is set by the CalendarItemContainerForTemplate
+        self.css = None
+
+    def intersects(self, other):
+        return self.start < other.end and self.end > other.start
+
+    def escaped_html(self):
+        # the html for the CalendarItem is rendered in a bootstrap popover
+        # which expects the HTML to be in a "data-content" attribute. Since
+        # this HTML is contained within quotes, we need to escape the
+        # quotes.
+        return self.model.to_html().replace('"', "\"")
+
+    def split(self):
+        new_request = copy.copy(self)
+        new_request.start = self.start.replace(hour=0, minute=0, second=0)+timedelta(days=1)
+        new_request.parent = self
+        return new_request
+
+
+class CalendarItemContainerForTemplate:
+    """
+    This is a special container for CalendarItem objects on a particular
+    day. When a CalendarItem is added to the list, this object will augment
+    the CalendarItem object with the appropriate CSS
     """
     def __init__(self, day):
-        # intervals are stored as an OrderedDict where the key is a "level"
+        # calendar_items are stored as an OrderedDict where the key is a "level"
         # integer, and the value is a list of RequestInterval objects. When
-        # intervals on this day overlap, we add another level, and stick the
+        # calendar_items on this day overlap, we add another level, and stick the
         # RequestInterval on that level. This helps position the items on the
         # page so they don't overlap
-        self.intervals = OrderedDict({0: []})
+        self.calendar_items = OrderedDict({0: []})
 
         # this is the default height for a row on the calendar. It may need
-        # to expand if there lots of interval collisions on this day
+        # to expand if there lots of calendar_item collisions on this day
         self.min_height = 30
 
-        # this is the height of an interval bar on the calendar
-        self.interval_height = 15;
+        # this is the height of an calendar_item bar on the calendar
+        self.calendar_item_height = 15
 
         # we use the day as part of the cache key generated in the __str__
         # method
@@ -35,10 +102,10 @@ class RequestIntervalContainerForTemplate:
     def height(self):
         # we need to know how big to make the row on this day. If it has a
         # bunch of collisions, it will grow bigger than the default height
-        return max(self.min_height, self.interval_height*(len(self.intervals)))
+        return max(self.min_height, self.calendar_item_height*(len(self.calendar_items)))
 
     def __iter__(self):
-        return iter(chain(*self.intervals.values()))
+        return iter(chain(*self.calendar_items.values()))
 
     def __str__(self):
         """
@@ -48,70 +115,56 @@ class RequestIntervalContainerForTemplate:
         string = str(self.day) + "|" + "|".join(item.cache_key for item in self)
         return string
 
-    def default_css(self, interval):
+    def default_css(self, calendar_item):
         """
-        Returns a dict of the default css properties for this interval
+        Returns a dict of the default css properties for this calendar_item
         """
-        start = localtime(interval.start)
-        end = localtime(interval.end)
+        start = localtime(calendar_item.start)
+        end = localtime(calendar_item.end)
 
         percent_from_left = (start - start.replace(hour=0, minute=0, second=0)).total_seconds() * PERCENTS_PER_SECOND
         percent_width = (end - start).total_seconds() * PERCENTS_PER_SECOND
-        # if this interval spans more than a day, cut it off at the end of the day
+        # if this calendar_item spans more than a day, cut it off at the end of the day
         percent_width = min(percent_width, 100.0 - percent_from_left)
 
         return {
             "width": str(percent_width) + "%",
             "left": str(percent_from_left) + "%",
-            "height": str(self.interval_height) + "px",
+            "height": str(self.calendar_item_height) + "px",
         }
 
-    def add_to_level(self, interval):
+    def add_to_level(self, calendar_item):
         level = 0
-        for level, intervals in self.intervals.items():
-            for other_interval in intervals:
-                if interval.intersects(other_interval):
+        for level, calendar_items in self.calendar_items.items():
+            for other_calendar_item in calendar_items:
+                if calendar_item.intersects(other_calendar_item):
                     level += 1
                     break
             else:
-                self.intervals.setdefault(level, []).append(interval)
+                self.calendar_items.setdefault(level, []).append(calendar_item)
 
-
-
-    def add(self, interval):
+    def add(self, calendar_item):
         """
-        This adds an interval to this object's interval collection of them and
+        This adds an calendar_item to this object's calendar_item collection of them and
         sets a bunch of properties on the object for use in the template
         """
         # we need to detect collisions on the calendar. We start off with one
-        # "level". If there is a collision between intervals, we put the
-        # interval on the next level down. When it's all done, we use the level
-        # to determine how much margin to add to the interval when it is
-        # displayed on the page so it doesn't overlap other intervals
-        for level in range(len(self.intervals)+1):
-            intervals = self.intervals.setdefault(level, [])
-            for other_interval in intervals:
-                if interval.intersects(other_interval):
+        # "level". If there is a collision between calendar_items, we put the
+        # calendar_item on the next level down. When it's all done, we use the level
+        # to determine how much margin to add to the calendar_item when it is
+        # displayed on the page so it doesn't overlap other calendar_items
+        for level in range(len(self.calendar_items)+1):
+            calendar_items = self.calendar_items.setdefault(level, [])
+            for other_calendar_item in calendar_items:
+                if calendar_item.intersects(other_calendar_item):
                     level += 1
                     break
             else:
-                intervals.append(interval)
+                calendar_items.append(calendar_item)
                 break
 
-        css = self.default_css(interval)
-        css['margin-top'] = str(level*self.interval_height) + "px"
+        css = self.default_css(calendar_item)
+        css['margin-top'] = str(level*self.calendar_item_height) + "px"
 
         # generate the CSS as a string
-        interval.css = ";".join("%s:%s" % rule for rule in css.items())
-
-        # the html for the interval is rendered in a bootstrap popover
-        # which expects the HTML to be in a "data-content" attribute. Since
-        # this HTML is contained within quotes, we need to escape the
-        # quotes. Also, we don't want to call to_html() unless we really
-        # need to (since this may be rendered in a cached template
-        # fragment), which is why we wrap it up in a lambda
-        interval.escaped_html = lambda interval=interval: interval.to_html().replace('"', "\"")
-
-        #self.intervals.append(interval)
-
-
+        calendar_item.css = ";".join("%s:%s" % rule for rule in css.items())

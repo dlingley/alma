@@ -12,37 +12,35 @@
             <tr>
                 <th colspan="2" class="separator">{{ month|date:"M Y" }}</th>
             </tr>
-            {% for date, intervals in dates.items %}
-                {% cache 50000 row6 intervals %}
-                    {% if date|date:"D" == "Sun" %}
-                        <tr class="week-marker">
-                            <td>&nbsp;</td>
-                            <td>
-                                {% for hour in hours %}
-                                    <div class="hour-marker">{{ hour }}</div>
-                                {% endfor %}
-                            </td>
-                        </tr>
-                    {% endif %}
-                    <tr class="{% if date == today %}today{% endif %}">
-                        <th>{{ date|date:"D n/j" }}</th>
+            {% for date, calendar_items in dates.items %}
+                {% if date|date:"D" == "Sun" %}
+                    <tr class="week-marker">
+                        <td>&nbsp;</td>
                         <td>
-                            {% for interval in intervals %}
-                                <div
-                                    class="request {{ interval.get_state_display|lower }}"
-                                    style="{{ interval.css }}"
-                                    data-username="{{ interval.request.user.username }}"
-                                    data-item-id="{{ interval.request.item_id }}"
-                                    data-toggle="popover"
-                                    data-content="{% if interval.parent %}{{ interval.parent.escaped_html }}{% else %}{{ interval.escaped_html }} {% endif %}"
-                                >{% if interval.parent %}...{% endif %}{{ interval.request.user.username }}</div>
-                            {% endfor %}
                             {% for hour in hours %}
-                                <div class="hour-marker" style="height: {{ intervals.height }}px"></div>
+                                <div class="hour-marker">{{ hour }}</div>
                             {% endfor %}
                         </td>
                     </tr>
-                {% endcache %}
+                {% endif %}
+                <tr class="{% if date == today %}today{% endif %}">
+                    <th>{{ date|date:"D n/j" }}</th>
+                    <td>
+                        {% for calendar_item in calendar_items %}
+                            <div
+                                class="calendar-item {{ calendar_item.model|model_name|lower }}"
+                                style="{{ calendar_item.css }}"
+                                data-username="{{ calendar_item.user.username }}"
+                                data-item-id="{{ calendar_item.bib.mms_id|default:calendar_item.item }}"
+                                data-toggle="popover"
+                                data-content="{{ calendar_item.escaped_html }}"
+                            >{% if calendar_item.parent %}...{% endif %}{{ calendar_item.user.username }}</div>
+                        {% endfor %}
+                        {% for hour in hours %}
+                            <div class="hour-marker" style="height: {{ calendar_items.height }}px"></div>
+                        {% endfor %}
+                    </td>
+                </tr>
             {% endfor %}
         {% endfor %}
     </tbody>

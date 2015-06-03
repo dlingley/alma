@@ -27,7 +27,6 @@ class User(AbstractBaseUser):
     def username(self):
         return self.email.replace("@pdx.edu", "")
 
-
     def __str__(self):
         if self.last_name and self.first_name:
             return self.get_full_name()

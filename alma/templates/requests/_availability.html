@@ -1,0 +1,12 @@
+<table class="table table-condensed table-striped">
+    {% for block in request_blocks %}
+        <tr>
+            <td>{{ block.start }} - {{ block.end }}</td>
+            <td>
+                {% for item in block.items %}
+                    <span class="{% if item.is_available %}text-success is-available{% else %}not-available text-danger{% endif %}">{{ item.name }}</span>
+                {% endfor %}
+            </td>
+        </tr>
+    {% endfor %}
+</table>

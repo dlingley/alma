@@ -57,7 +57,7 @@ $(document).ready(function(){
     // create an event to redraw the display of the calendar
     $('body').on("calendar:redraw", function(e){
         var username = $.trim($('#id_user').val());
-        var item = $.trim($('#id_item').val());
+        var item = $.trim($('#id_bibs_or_item').val());
 
         // parse out the username from what they inputted
         username = /\((.*)\)$/.exec(username)
@@ -72,22 +72,22 @@ $(document).ready(function(){
         }
 
         // remove all the indicator classes
-        $('.request').removeClass("user-match item-match unhighlighted");
+        $('.calendar-item').removeClass("user-match item-match unhighlighted");
 
         // if we have a username or item entered, we need to unhighlight all
         // the requests
         if(username || item){
-            $('.request').addClass("unhighlighted");
+            $('.calendar-item').addClass("unhighlighted");
         }
 
         // un-unhighlight anything that matches the username
         if(username){
-            $('.request[data-username="' + username + '"]').addClass("user-match");
+            $('.calendar-item[data-username="' + username + '"]').addClass("user-match");
         }
 
         // un-unhighlight anything that matches the item
         if(item){
-            $('.request[data-item-id="' + item + '"]').addClass("item-match");
+            $('.calendar-item[data-item-id="' + item + '"]').addClass("item-match");
         }
     });
 
@@ -105,11 +105,11 @@ $(document).ready(function(){
     $('body').popover({
         "placement": "auto",
         "trigger": "click",
-        "selector": '.request',
+        "selector": '.calendar-item',
         "html": true,
     }).on("show.bs.popover", function(e){
         // ensure only one popover shows at a time
-        $("body .request").not(e.target).popover("destroy");
+        $("body .calendar-item").not(e.target).popover("destroy");
         $(".popover").remove();
     });
 
@@ -144,22 +144,30 @@ $(document).ready(function(){
 
     // whenever the username or item fields change, redraw the calendar to
     // reflect the changes
-    $('#id_user, #id_item').on("change", function(){
+    $('#id_user, #id_bibs_or_item').on("typeahead:change", function(){
         $('body').trigger("calendar:redraw");
     });
 
     // when the username changes, fetch the data for the user
-    $('#id_user').on("change", function(){
+    $('#id_user').on("typeahead:change", function(){
+        console.log("here");
         $('body').trigger("user-requests:reload");
     });
 
     // create an event for reloading the user-requests div
     $('body').on("user-requests:reload", function(){
-        var user = $('#id_user').val()
-        if($.trim(user) == ""){
+        var username = $('#id_user').val()
+
+        username = /\((.*)\)$/.exec(username)
+        if(username != null){
+            username = username[1];
+        } else {
+            username = ""
+        }
+        if($.trim(username) == ""){
             $('#user-requests').html("");
         } else {
-            $.get("/requests/user", {"username": user}, function(html){
+            $.get("/requests/user", {"username": username}, function(html){
                 $('#user-requests').html(html);
             });
         }
@@ -169,53 +177,69 @@ $(document).ready(function(){
     // whenever the form changes, check to see if the request is available
     $('form input').on("change", function(){
         $.post("/requests/available", $('form').serialize(), function(data){
-            $('#status-flag').removeClass()
-            if(data == "available"){
-                $('#status-flag').addClass("glyphicon glyphicon-ok text-success")
-            } else if(data == "unavailable"){
-                $('#status-flag').addClass("glyphicon glyphicon-remove text-danger")
-            }
-
+            $('#availability').html(data);
         });
     });
 
     // load the calendar when the page first loads
     $('body').trigger("calendar:reload");
 
-    $('#id_item').typeahead({}, {
+    var hide_or_show_create_request = function(){
+        var val = $(this).val();
+        if(val.indexOf("MMS_ID") != -1){
+            $('#request-section').show();
+        } else {
+            $('#request-section').hide();
+        }
+    }
+
+    $('#id_bibs_or_item').typeahead({}, {
+        source: function(query, syncResults, asyncResults){
+            $.get("/bibs/autocomplete", {query: query}, asyncResults);
+        },
+        display: function(item){
+            return item.name + " (MMS_ID: " + item.mms_id + ")"
+        },
+        templates: {
+            suggestion: function(item){
+                return "<div><strong>" + item.name + "</strong></div>"
+            }
+        },
+    },
+    {
         source: function(query, syncResults, asyncResults){
             $.get("/items/autocomplete", {query: query}, asyncResults);
         },
         display: function(item){
-            return item.name + " (" + item.item_id + ")"
+            return item.name + " (Barcode: " + item.barcode + ")"
         },
         templates: {
             suggestion: function(item){
-                return "<div><strong>" + item.name + "</strong><br />" + item.description + "<em> #" + item.item_id + "</em></div>"
+                return "<div>" + item.name + "<br />#" + item.barcode + "</em></div>"
             }
-        }
-    }).on("typeahead:select", function(){
-        $('body').trigger("calendar:redraw");
-    })
+        },
+    }).on("typeahead:change typeahead:select", hide_or_show_create_request)
 
     $('#id_user').typeahead({}, {
         source: function(query, syncResults, asyncResults){
-            $.get("/users/autocomplete", {query: query}, function(results){
-                console.log(results)
-                asyncResults(results);
-            });
+            $.get("/users/autocomplete", {query: query}, asyncResults);
         },
         display: function(user){
-            console.log("here")
-            return user.full_name + " (" + user.odin + ")"
+            return user.odin + " (" + user.odin + ")"
         },
         templates: {
             suggestion: function(user){
-                console.log("here2")
-                return "<div><strong>" + user.full_name +  "</strong><br />" + user.odin + "</div>"
+                return "<div><strong>" + user.odin +  "</strong><br />" + user.full_name + "</div>"
             }
         }
-    }).on("typeahead:select", function(){
-        $('body').trigger("calendar:redraw");
     })
+    //.on("typeahead:change", function(){
+    //    console.log("here")
+    //    console.log($('#id_user').val());
+    //    $('body').trigger("calendar:redraw");
+    //    console.log($('#id_user').val());
+    //})
+    //
+
+    $('#request-section').hide();
 });

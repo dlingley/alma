@@ -1,10 +1,10 @@
 import tempfile
 import shutil
 from django.conf import settings
-from django.test.runner import DiscoverRunner
+from elasticmodels import SearchRunner
 
 
-class TestRunner(DiscoverRunner):
+class TestRunner(SearchRunner):
     """
     Set whatever test settings need to be in place when you run tests
     """

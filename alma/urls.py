@@ -2,7 +2,6 @@ from django.conf.urls import patterns, include, url
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.conf import settings
-from django.views.generic import TemplateView
 from .users import views as users
 from .requests import views as requests
 from .items import views as items
@@ -25,11 +24,12 @@ urlpatterns = patterns(
     url(r'^logout/?$', 'djangocas.views.logout', name="logout"),
 
     url(r'^items/autocomplete/?$', items.autocomplete, name='items-autocomplete'),
+    url(r'^bibs/autocomplete/?$', items.autocomplete_bibs, name='bibs-autocomplete'),
 
     url(r'^requests/calendar/?$', requests.calendar, name='requests-calendar'),
     url(r'^requests/available/?$', requests.available, name='requests-available'),
     url(r'^requests/user/?$', requests.user, name='requests-user'),
-    url(r'^requests/change_status/(?P<request_interval_id>\d+)?$', requests.change_status, name='requests-change-status'),
+    url(r'^requests/change_status/(?P<request_id>\d+)?$', requests.change_status, name='requests-change-status'),
 
     # Here we define all the URL routes for the users app. Technically, you
     # could put these routes in the app itself, but for non-reusable apps, we
@@ -44,7 +44,7 @@ urlpatterns = patterns(
 
     # these url routes are useful for password reset functionality and logging in and out
     # https://github.com/django/django/blob/master/django/contrib/auth/urls.py
-    #url(r'', include('django.contrib.auth.urls')),
+    # url(r'', include('django.contrib.auth.urls')),
 
     # these routes allow you to masquerade as a user, and login as them from the command line
     url(r'^cloak/', include('cloak.urls'))

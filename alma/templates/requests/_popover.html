@@ -1,18 +1,10 @@
-<form action="{% url 'requests-change-status' interval.pk %}" method="post" class="request-interval-form">
-    {% for interval, status_field, delete_field, delete_choice_field in form %}
-        <div class="btn-group state-toggle" data-toggle="buttons">
-            {% for choice in status_field %}
-            <label class="btn btn-primary btn-sm {% if choice.is_checked %}active{% endif %}">
-                {{ choice.tag }} {{ choice.choice_label }}
-            </label>
-            {% endfor %}
-        </div>
-
+<form action="{% url 'requests-change-status' request.pk %}" method="post" class="request-interval-form">
+    {% for request, delete_field, delete_choice_field in form %}
         <p>
-        Reservation #{{ interval.pk }} by <a href="#">{{ interval.request.user.username }}</a> for <em>{{ interval.request.item }}</em>
-        from <strong>{{ interval.start|date:"P" }}</strong> until <strong>{{ interval.end|date:"P" }}</strong>
-        {% if interval.request.repeat_on %}
-            repeating on {{ days }} starting on {{ interval.request.requestview.first_interval.start|date:"D, F j, Y" }} and ending on {{ interval.request.requestview.last_interval.start|date:"D, F j, Y" }}.
+        Reservation #{{ request.pk }} by <a href="#">{{ request.reservation.user.username }}</a> for <em>{{ request.reservation.bib }}</em>
+        from <strong>{{ request.start|date:"P" }}</strong> until <strong>{{ request.end|date:"P" }}</strong>
+        {% if request.reservation.repeat_on %}
+            repeating on {{ days }} starting on {{ request.reservation.first_request.start|date:"D, F j, Y" }} and ending on {{ request.reservation.last_request.start|date:"D, F j, Y" }}.
         {% endif %}
         </p>
 

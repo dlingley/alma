@@ -1,6 +1,7 @@
 from datetime import timedelta, datetime
 from model_mommy.mommy import make, prepare
 from unittest.mock import Mock, patch
+from elasticmodels import ESTestCase
 from django.test import TestCase
 from django.utils.timezone import now
 from django.forms import ValidationError
@@ -59,7 +60,7 @@ class RequestTest(TestCase):
         self.assertEqual(len(intervals), 3)
 
 
-class RequestIntervalTest(TestCase):
+class RequestIntervalTest(TestCase, ESTestCase):
     def test_cache_key(self):
         ri = prepare(RequestInterval, pk=1)
         ri2 = prepare(RequestInterval, pk=2)

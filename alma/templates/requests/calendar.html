@@ -9,8 +9,9 @@
 <script src="{{ STATIC_URL }}datetimepicker/jquery.datetimepicker.js"></script>
 <script src="{{ STATIC_URL }}js/typeahead.bundle.js"></script>
 
+{{ form.errors }}
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-4" style="position:fixed">
         <form method="post">
             {% csrf_token %}
             {{ form.non_field_errors }}
@@ -19,11 +20,11 @@
                     {{ form.user|bootstrap }}
                 </div>
                 <div class="col-md-6">
-                    {{ form.item|bootstrap }}
+                    {{ form.bibs_or_item|bootstrap }}
                 </div>
             </div>
-            <fieldset>
-                <legend>Create Request <span id="status-flag"></span></legend>
+            <fieldset id="request-section">
+                <legend>Create Request</legend>
                 <div class="row">
                     <div class="col-md-6">
                         {{ form.starting_on|bootstrap }}
@@ -45,8 +46,9 @@
             <button type="submit">Create Reservation</button>
         </form>
         <div id="user-requests"></div>
+        <div id="availability"></div>
     </div>
-    <div class="col-md-8" id="calendar-wrapper"></div>
+    <div class="col-md-8 col-md-offset-4" id="calendar-wrapper"></div>
 </div>
 
 {% endblock %}
