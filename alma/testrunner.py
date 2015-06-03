@@ -1,5 +1,6 @@
-import tempfile
 import shutil
+import tempfile
+
 from django.conf import settings
 from elasticmodels import SearchRunner
 

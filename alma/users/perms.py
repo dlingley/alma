@@ -1,5 +1,5 @@
-from .models import User
 from ..perms import permissions
+from .models import User
 
 
 @permissions.register

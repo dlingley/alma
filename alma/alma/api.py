@@ -1,12 +1,13 @@
-from datetime import datetime
-import requests
 import json
 import time
-from functools import partial
 import xml.etree.ElementTree as ET
+from datetime import datetime
+from functools import partial
+
+import requests
+from django.conf import settings
 from django.db import transaction
 from django.utils.timezone import now, utc
-from django.conf import settings
 
 API_KEY = settings.ALMA_API_KEY
 

@@ -1,8 +1,9 @@
 import copy
-from django.utils.timezone import localtime, now
-from itertools import chain
 from collections import OrderedDict
 from datetime import timedelta
+from itertools import chain
+
+from django.utils.timezone import localtime, now
 
 NUMBER_OF_SECONDS_IN_A_DAY = 60*60*24
 PERCENTS_PER_SECOND = 100.0/NUMBER_OF_SECONDS_IN_A_DAY

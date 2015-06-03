@@ -1,4 +1,5 @@
-from arcutils.ldap import ldapsearch, escape
+from arcutils.ldap import escape, ldapsearch
+
 
 def is_ldap_user(username):
     """

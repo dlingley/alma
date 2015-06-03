@@ -4,10 +4,13 @@ bookings/requests for an item. The whole point of *this* application is to get
 around that. A Request here can have one or more days (RequestInterval)
 associated with it. Thus, allowing for repeating reservations.
 """
-from django.db import models
 from datetime import timedelta
+
+from django.db import models
 from django.template.loader import render_to_string
+
 from alma.alma.api import create_booking, delete_booking
+
 from .enums import DayOfWeek
 
 
@@ -148,4 +151,4 @@ class Request(models.Model):
         })
 
 
-from .forms import RequestChangeForm
+from .forms import RequestChangeForm  # isort:skip

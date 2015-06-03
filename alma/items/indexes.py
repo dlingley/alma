@@ -1,6 +1,7 @@
-from elasticsearch_dsl import analyzer, tokenizer, token_filter
 from elasticmodels import Index, StringField
-from .models import Item, Bib
+from elasticsearch_dsl import analyzer, token_filter, tokenizer
+
+from .models import Bib, Item
 
 # override the default analyzer for ES to use an ngram filter that breaks words using
 # the standard tokenizer. Allow words to be broken up with underscores

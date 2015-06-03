@@ -1,7 +1,8 @@
-from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from elasticsearch_dsl import Q
-from .indexes import ItemIndex, BibIndex
+
+from .indexes import BibIndex, ItemIndex
 
 
 @login_required

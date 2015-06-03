@@ -1,15 +1,15 @@
 from datetime import date
 from unittest.mock import Mock, patch
+
+from django.core.urlresolvers import reverse
+from django.test import TestCase
 from model_mommy.mommy import make, prepare
 
-from django.test import TestCase
-from django.core.urlresolvers import reverse
-
-from .models import User
 from .forms import UserForm
-from .views import detail
+from .models import User
 from .perms import permissions
 from .utils import is_ldap_user
+from .views import detail
 
 thing = lambda date, repeat_on: (2**((date.weekday()+1)%7)) & repeat_on
 

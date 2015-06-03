@@ -1,15 +1,18 @@
-from datetime import timedelta, datetime
-from model_mommy.mommy import make, prepare
+from datetime import datetime, timedelta
 from unittest.mock import Mock, patch
-from elasticmodels import ESTestCase
+
+from django.forms import ValidationError
 from django.test import TestCase
 from django.utils.timezone import now
-from django.forms import ValidationError
-from alma.users.models import User
+from elasticmodels import ESTestCase
+from model_mommy.mommy import make, prepare
+
 from alma.items.models import Item
+from alma.users.models import User
+
 from .enums import DayOfWeek
-from .models import Request, RequestInterval
 from .forms import RequestForm
+from .models import Request, RequestInterval
 
 
 class DayOfWeekTest(TestCase):

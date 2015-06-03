@@ -1,11 +1,14 @@
 import re
+
 from django import forms
-from alma.users.utils import is_ldap_user
-from alma.users.models import User
-from alma.items.models import Item, Bib
+
+from alma.items.models import Bib, Item
 from alma.loans.models import Loan
-from .models import Reservation, Request
+from alma.users.models import User
+from alma.users.utils import is_ldap_user
+
 from .enums import DayOfWeek
+from .models import Request, Reservation
 
 
 class OmniForm(forms.Form):

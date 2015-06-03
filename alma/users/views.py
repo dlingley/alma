@@ -1,16 +1,15 @@
 from arcutils import will_be_deleted_with
-from arcutils.ldap import ldapsearch, escape, parse_profile
-
-from django.shortcuts import render, get_object_or_404, redirect
+from arcutils.ldap import escape, ldapsearch, parse_profile
 from django.conf import settings
-from django.http import JsonResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import UserForm
 from .models import User
-from .perms import permissions, can_list_users
+from .perms import can_list_users, permissions
 
 
 @login_required

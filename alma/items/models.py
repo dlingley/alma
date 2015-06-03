@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Bib(models.Model):
     """
     A bib is like a collection of homogenius items.

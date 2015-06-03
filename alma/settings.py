@@ -1,10 +1,14 @@
 import os
 from fnmatch import fnmatch
-from django.core.urlresolvers import reverse_lazy
-from django.contrib.messages import constants as messages
-from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP, AUTHENTICATION_BACKENDS, DATETIME_INPUT_FORMATS
-from varlet import variable
 
+from django.conf.global_settings import (
+    AUTHENTICATION_BACKENDS,
+    DATETIME_INPUT_FORMATS,
+    TEMPLATE_CONTEXT_PROCESSORS as TCP,
+)
+from django.contrib.messages import constants as messages
+from django.core.urlresolvers import reverse_lazy
+from varlet import variable
 
 #
 # Path constructors

@@ -1,7 +1,8 @@
 from arcutils import ldap
-from djangocas.backends import CASBackend
 from django.core.exceptions import PermissionDenied
 from django.utils.timezone import now
+from djangocas.backends import CASBackend
+
 from .models import User
 
 LOGIN_GROUPS = ['arc']

@@ -1,15 +1,18 @@
 from collections import OrderedDict
 from datetime import date, timedelta
-from django.utils.timezone import now
+
 from django.http import HttpResponse
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt
-from alma.users.models import User
+
 from alma.alma.api import is_available
 from alma.loans.models import Loan
+from alma.users.models import User
+
 from .forms import OmniForm, RequestChangeForm
-from .utils import CalendarItemContainerForTemplate, CalendarItem
-from .models import iter_intervals, Request
+from .models import Request, iter_intervals
+from .utils import CalendarItem, CalendarItemContainerForTemplate
 
 DAYS_TO_SHOW = 90
 
