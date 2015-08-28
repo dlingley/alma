@@ -66,7 +66,7 @@ $(document).ready(function(){
         }
 
         // parse out the item id from what they inputted
-        item = /\((.*)\)$/.exec(item)
+        item = /\(.*: (.*)\)$/.exec(item)
         if(item != null){
             item = item[1];
         }
