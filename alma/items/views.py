@@ -11,7 +11,7 @@ def autocomplete(request):
     Searches all the fields on the Item index and returns the results
     """
     query = request.GET.get("query", "")
-    dsl = Q("multi_match", query=query, fields=["description", "category", "name"])
+    dsl = Q("multi_match", query=query, fields=["description", "category", "name", "barcode"])
     # on the typeahead autocomplete textbox, in the user interface, if the user selects an item,
     # that could potentially re-order the items in the typeahead drop down
     # (because ES will re-query based on the text of the option they selected). That
