@@ -126,7 +126,7 @@ class CalendarItemContainerForTemplate:
         percent_from_left = (start - start.replace(hour=0, minute=0, second=0)).total_seconds() * PERCENTS_PER_SECOND
         percent_width = (end - start).total_seconds() * PERCENTS_PER_SECOND
         # if this calendar_item spans more than a day, cut it off at the end of the day
-        percent_width = min(percent_width, 100.0 - percent_from_left)
+        percent_width = max(1, min(percent_width, 100.0 - percent_from_left))
 
         return {
             "width": str(percent_width) + "%",

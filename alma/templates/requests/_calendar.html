@@ -31,7 +31,8 @@
                                 class="calendar-item {{ calendar_item.model|model_name|lower }}"
                                 style="{{ calendar_item.css }}"
                                 data-username="{{ calendar_item.user.username }}"
-                                data-item-id="{{ calendar_item.bib.mms_id|default:calendar_item.item }}"
+                                data-item-id="{{ calendar_item.item.barcode }}"
+                                data-mms-id="{{ calendar_item.bib.mms_id }}"
                                 data-toggle="popover"
                                 data-content="{{ calendar_item.escaped_html }}"
                             >{% if calendar_item.parent %}...{% endif %}{{ calendar_item.user.username }}</div>

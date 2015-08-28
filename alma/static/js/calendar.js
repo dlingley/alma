@@ -87,7 +87,7 @@ $(document).ready(function(){
 
         // un-unhighlight anything that matches the item
         if(item){
-            $('.calendar-item[data-item-id="' + item + '"]').addClass("item-match");
+            $('.calendar-item[data-mms-id="' + item + '"]').addClass("item-match");
         }
     });
 

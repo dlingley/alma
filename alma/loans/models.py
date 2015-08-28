@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.timezone import now
+from django.template.loader import render_to_string
 
 from alma.alma.api import create_loan, return_loan
 
@@ -26,8 +27,9 @@ class Loan(models.Model):
         return self.save()
 
     def to_html(self):
-        # TODO
-        return "foo"
+        return render_to_string("loans/_popover.html", {
+            "loan": self,
+        })
 
     def save(self, *args, **kwargs):
         """

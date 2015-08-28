@@ -153,7 +153,7 @@ def calendar(request):
         returned_on=None,
         loaned_on__gte=start_date,
         loaned_on__lt=end_date
-    ).select_related("item"))
+    ).select_related("item", "user", "item__bib"))
 
     i = 0
     while i < len(calendar_items):
