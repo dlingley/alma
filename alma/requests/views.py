@@ -5,6 +5,8 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt
+from django.utils.timezone import now, localtime
+from django.contrib.auth.decorators import login_required
 
 from alma.alma.api import is_available
 from alma.loans.models import Loan
@@ -16,6 +18,8 @@ from .utils import CalendarItem, CalendarItemContainerForTemplate
 
 DAYS_TO_SHOW = 90
 
+
+@login_required
 def main(request):
     """Display the main calendar view"""
     if request.method == "POST":
@@ -32,6 +36,7 @@ def main(request):
 
 
 @csrf_exempt # TODO fix this
+@login_required
 def change_status(request, request_id):
     req = get_object_or_404(Request, pk=request_id)
     form = RequestChangeForm(request.POST, requests=[req])
@@ -40,6 +45,7 @@ def change_status(request, request_id):
     return HttpResponse()
 
 
+@login_required
 def user(request):
     """
     Return the recent Requests Intervals for this user, or ones that have been
@@ -60,6 +66,7 @@ def user(request):
     })
 
 
+@login_required
 def available(request):
     """
     This is a little hacky, but it checks to see if the
@@ -109,6 +116,7 @@ def available(request):
     return HttpResponse("notvalid")
 
 
+@login_required
 def calendar(request):
     # get the first Sunday of the week
     try:
@@ -116,7 +124,8 @@ def calendar(request):
     except (TypeError, ValueError):
         page = 0
 
-    start_date = date.today() - timedelta(days=(date.today().weekday()+1)) + timedelta(days=page*DAYS_TO_SHOW)
+    today = localtime(now())
+    start_date = today - timedelta(days=(today.date().weekday()+1)) + timedelta(days=page*DAYS_TO_SHOW)
 
     # `calendar` is a ordereddict where the key is a date object (of the first of
     # the month), and the value is an ordered dict where the key is a date, and
@@ -126,11 +135,11 @@ def calendar(request):
 
     # initialize all the days in the calendar
     for i in range(DAYS_TO_SHOW):
-        month = day.replace(day=1)
+        month = day.replace(day=1).date()
         if month not in calendar:
             calendar[month] = OrderedDict()
 
-        calendar[month][day] = CalendarItemContainerForTemplate(day=day)
+        calendar[month][day.date()] = CalendarItemContainerForTemplate(day=day.date())
         day += timedelta(days=1)
 
     # the end_date is one day ahead of where we want to stop. That's OK, since
@@ -171,7 +180,7 @@ def calendar(request):
     return render(request, "requests/_calendar.html", {
         "calendar": calendar,
         "hours": hours,
-        "today": date.today(),
+        "today": today.date(),
         "page": page,
         "next_page": page+1,
         "previous_page": page-1,
