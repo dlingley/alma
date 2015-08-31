@@ -323,30 +323,27 @@ def parse_alma_datetime(dt):
 #
 # Some examples
 #
-#print(json.dumps(get_users(), indent=4))
+# print(json.dumps(get_users(), indent=4))
 
-#print(json.dumps(get_user("mdj2"), indent=4))
-#print(json.dumps(get_codes("UserIdentifierTypes"), indent=4))
-#print(json.dumps(create_booking("mdj2", "99902460728301853", "2015-06-05T10:10:10Z", "2015-06-05T11:10:10Z")))
-#response = delete_booking("5497242890001853", 99902460736601853)
-#if response != True:
-#    print(json.dumps(response, indent=4))
-#print(json.dumps(get_report("/shared/Portland State University/Reports/cg oit avs"), indent=4))
-#update_items()
-#print(json.dumps(create_loan("mdj2", "50110020840266"), indent=4))
+# print(json.dumps(get_user("mdj2"), indent=4))
+# print(json.dumps(get_codes("UserIdentifierTypes"), indent=4))
+# print(json.dumps(create_booking("mdj2", "99902460728301853", "2015-06-05T10:10:10Z", "2015-06-05T11:10:10Z")))
+# response = delete_booking("5497242890001853", 99902460736601853)
+# if response != True:
+#     print(json.dumps(response, indent=4))
+# print(json.dumps(get_report("/shared/Portland State University/Reports/cg oit avs"), indent=4))
+# update_items()
+# print(json.dumps(create_loan("mdj2", "50110020840266"), indent=4))
 # "99902462241301853"
-#print(json.dumps(scan_in("99902462241301853", "22305518160001853", "23305517970001853"), indent=4))
-
-
-
+# print(json.dumps(scan_in("99902462241301853", "22305518160001853", "23305517970001853"), indent=4))
 
 # booking
-#mms_id = "99902463601001853"
-#print(json.dumps(create_booking("mdj2", mms_id, "2015-08-30T10:10:10Z", "2015-08-30T11:10:10Z"), indent=4))
-#request_id = "5814518270001853"
-#print(json.dumps(delete_booking(request_id, mms_id), indent=4))
-#print(json.dumps(get_availability(mms_id, 180), indent=4))
-#print(json.dumps(create_booking("kfarr2", mms_id, "2015-08-30T10:10:10Z", "2015-08-30T11:10:10Z"), indent=4))
-#print(is_available(mms_id, [(datetime(2015, 8, 29, 2, tzinfo=now().tzinfo), datetime(2015, 8, 29, 2, 59, tzinfo=now().tzinfo))]))
-#print(json.dumps(get_availability(mms_id, 180), indent=4))
-#print(json.dumps(create_booking("will", mms_id, "2015-08-30T10:10:10Z", "2015-08-30T11:10:10Z"), indent=4))
+# mms_id = "99902463601001853"
+# print(json.dumps(create_booking("mdj2", mms_id, "2015-08-30T10:10:10Z", "2015-08-30T11:10:10Z"), indent=4))
+# request_id = "5814518270001853"
+# print(json.dumps(delete_booking(request_id, mms_id), indent=4))
+# print(json.dumps(get_availability(mms_id, 180), indent=4))
+# print(json.dumps(create_booking("kfarr2", mms_id, "2015-08-30T10:10:10Z", "2015-08-30T11:10:10Z"), indent=4))
+# print(is_available(mms_id, [(datetime(2015, 8, 29, 2, tzinfo=now().tzinfo), datetime(2015, 8, 29, 2, 59, tzinfo=now().tzinfo))]))
+# print(json.dumps(get_availability(mms_id, 180), indent=4))
+# print(json.dumps(create_booking("will", mms_id, "2015-08-30T10:10:10Z", "2015-08-30T11:10:10Z"), indent=4))

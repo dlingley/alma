@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 from django.forms import ValidationError
 from django.test import TestCase
@@ -109,7 +109,7 @@ class RequestTest(AlmaTest):
         self.assertTrue(Request(start=start_0, end=end_0).intersects(Request(start=start_1, end=end_1)))
 
     def test_to_html(self):
-        res = prepare(Reservation, repeat_on=DayOfWeek.MONDAY|DayOfWeek.TUESDAY)
+        res = prepare(Reservation, repeat_on=DayOfWeek.MONDAY | DayOfWeek.TUESDAY)
         res.save(starting_on=now(), ending_on=now()+timedelta(hours=1))
         r = make(Request, reservation=res)
         html = r.to_html()
@@ -179,22 +179,22 @@ class OmniFormTest(AlmaTest):
         self.assertIn("The end repeating on date must be greater than the starting on date", str(form.errors))
 
         # if there are no errors on the form, the availability should be checked
-        item = make(Item)
-        data = {
-            "item": "foo (%s)" % (item.pk) ,
-            "user": "Matt (mdj2)",
-            "starting_on": datetime(year=2012, month=12, day=12),
-            "ending_on": datetime(year=2012, month=12, day=13),
-        }
-        #with patch("alma.requests.forms.Request.objects.is_available", return_value=True):
-        #    with patch("alma.requests.forms.is_ldap_user", return_value=True):
-        #        form = OmniForm(data)
-        #        self.assertTrue(form.is_valid())
+        # item = make(Item)
+        # data = {
+        #     "item": "foo (%s)" % (item.pk),
+        #     "user": "Matt (mdj2)",
+        #     "starting_on": datetime(year=2012, month=12, day=12),
+        #     "ending_on": datetime(year=2012, month=12, day=13),
+        # }
+        # with patch("alma.requests.forms.Request.objects.is_available", return_value=True):
+        #     with patch("alma.requests.forms.is_ldap_user", return_value=True):
+        #         form = OmniForm(data)
+        #         self.assertTrue(form.is_valid())
 
-        #with patch("alma.requests.forms.Request.objects.is_available", return_value=False):
-        #    with patch("alma.requests.forms.is_ldap_user", return_value=True):
-        #        form = OmniForm(data)
-        #        self.assertFalse(form.is_valid())
+        # with patch("alma.requests.forms.Request.objects.is_available", return_value=False):
+        #     with patch("alma.requests.forms.is_ldap_user", return_value=True):
+        #         form = OmniForm(data)
+        #         self.assertFalse(form.is_valid())
 
     def test_reservation_and_requests_are_created_on_save(self):
         dt = now()
@@ -269,7 +269,7 @@ class RequestDeleteFormTest(AlmaTest):
         self.assertNotIn("The entire series", str(form['choice']))
 
         # now make the reservation repeat, and now we should see the extra choices
-        res = prepare(Reservation, repeat_on=DayOfWeek.MONDAY|DayOfWeek.TUESDAY)
+        res = prepare(Reservation, repeat_on=DayOfWeek.MONDAY | DayOfWeek.TUESDAY)
         res.save(starting_on=now(), ending_on=now()+timedelta(hours=1))
         r = make(Request, reservation=res)
         form = RequestDeleteForm(request=r)
@@ -277,7 +277,7 @@ class RequestDeleteFormTest(AlmaTest):
         self.assertIn("The entire series", str(form['choice']))
 
     def test_save_when_deleting_just_the_single_request(self):
-        res = prepare(Reservation, repeat_on=DayOfWeek.MONDAY|DayOfWeek.TUESDAY)
+        res = prepare(Reservation, repeat_on=DayOfWeek.MONDAY | DayOfWeek.TUESDAY)
         res.save(starting_on=now(), ending_on=now()+timedelta(hours=1), end_repeating_on=now()+timedelta(days=14))
         request = Request.objects.filter(reservation=res).order_by("pk").first()
         pre_count = Request.objects.count()
@@ -288,7 +288,7 @@ class RequestDeleteFormTest(AlmaTest):
         self.assertEqual(pre_count-1, Request.objects.count())
 
     def test_save_when_deleting_entire_series(self):
-        res = prepare(Reservation, repeat_on=DayOfWeek.MONDAY|DayOfWeek.TUESDAY)
+        res = prepare(Reservation, repeat_on=DayOfWeek.MONDAY | DayOfWeek.TUESDAY)
         res.save(starting_on=now(), ending_on=now()+timedelta(hours=1), end_repeating_on=now()+timedelta(days=14))
         request = Request.objects.filter(reservation=res).order_by("pk").last()
 
@@ -298,7 +298,7 @@ class RequestDeleteFormTest(AlmaTest):
         self.assertEqual(0, Request.objects.count())
 
     def test_save_when_this_and_all_after_is_chosen(self):
-        res = prepare(Reservation, repeat_on=DayOfWeek.MONDAY|DayOfWeek.TUESDAY)
+        res = prepare(Reservation, repeat_on=DayOfWeek.MONDAY | DayOfWeek.TUESDAY)
         res.save(starting_on=now(), ending_on=now()+timedelta(hours=1), end_repeating_on=now()+timedelta(days=14))
         # since we're getting the second Request in the reservation, all but
         # the first should be deleted

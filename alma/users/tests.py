@@ -1,16 +1,14 @@
 from datetime import date
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
-from django.core.urlresolvers import reverse
 from django.test import TestCase
-from model_mommy.mommy import make, prepare
+from model_mommy.mommy import prepare
 
-from .forms import UserForm
 from .models import User
-from .perms import permissions
 from .utils import is_ldap_user
 
-thing = lambda date, repeat_on: (2**((date.weekday()+1)%7)) & repeat_on
+thing = lambda date, repeat_on: (2**((date.weekday()+1) % 7)) & repeat_on
+
 
 class TestThing(TestCase):
     def test(self):
@@ -29,6 +27,7 @@ class IsLdapUserTest(TestCase):
             self.assertTrue(is_ldap_user("mdj2"))
         with patch("alma.users.utils.ldapsearch", return_value=[]):
             self.assertFalse(is_ldap_user("mdj2222"))
+
 
 class UserTest(TestCase):
     """
