@@ -126,6 +126,7 @@ def calendar(request):
 
     today = localtime(now())
     start_date = today - timedelta(days=(today.date().weekday()+1)) + timedelta(days=page*DAYS_TO_SHOW)
+    start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
 
     # `calendar` is a ordereddict where the key is a date object (of the first of
     # the month), and the value is an ordered dict where the key is a date, and
@@ -161,19 +162,19 @@ def calendar(request):
     calendar_items.extend(CalendarItem.from_loan(loan) for loan in Loan.objects.filter(
         returned_on=None,
         loaned_on__gte=start_date,
-        loaned_on__lt=end_date
     ).select_related("item", "user", "item__bib"))
 
     i = 0
     while i < len(calendar_items):
         calendar_item = calendar_items[i]
-        request_list = calendar[calendar_item.start.date().replace(day=1)][calendar_item.start.date()]
-
         # we need to split this calendar_item into two pieces since it spans multiple days
         if calendar_item.end.date() > calendar_item.start.date():
             calendar_items.append(calendar_item.split())
 
-        request_list.add(calendar_item)
+        if start_date <= calendar_item.start < end_date:
+            calendar[
+                calendar_item.start.date().replace(day=1)
+            ][calendar_item.start.date()].add(calendar_item)
         i += 1
 
     hours = ["12am"] + [t+"am" for t in map(str, range(1, 12))] + ["12pm"] + [t+"pm" for t in map(str, range(1, 12))]

@@ -69,7 +69,7 @@ class CalendarItem:
 
     def split(self):
         new_request = copy.copy(self)
-        new_request.start = self.start.replace(hour=0, minute=0, second=0)+timedelta(days=1)
+        new_request.start = self.start.replace(hour=0, minute=0, second=0, microsecond=0)+timedelta(days=1)
         new_request.parent = self
         return new_request
 
