@@ -40,9 +40,6 @@ We need to load the permissions template library so we can access the permission
                 <div class="container-fluid">
                     <ul class="nav navbar-nav">
                         <li><a href="{% url 'home' %}">Home</a></li>
-                        {% if user|can_list_users %}
-                            <li><a href="{% url 'users-list' %}">Users</a></li>
-                        {% endif %}
                     </ul>
 
                     <ul class="nav navbar-nav navbar-right">
