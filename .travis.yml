@@ -1,21 +1,14 @@
 language: python
 python:
   - "3.3"
-  - "3.4"
-services:
-    - elasticsearch
 sudo: false
 # command to install dependencies
 install:
   - cp variables.travis.py variables.py
   - make init
-# knock knock
-# Who's there?
-# ...
-# (long pause)
-# ...
-# elasticsearch
-before_script:
-    - sleep 10
 # command to run tests
 script: make test
+services:
+  - elasticsearch
+before_script:
+  - sleep 10

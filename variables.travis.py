@@ -5,7 +5,7 @@ DEBUG = True
 ADMINS = [('Matt', 'foo@example.com')]
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "hi"
+SECRET_KEY = "foo"
 
 # This hostname is used to construct URLs. It would be something like
 # "example.com" in production. This is used to construct the
@@ -23,3 +23,7 @@ DB_PASSWORD = ''
 
 # the default is fine for dev
 DB_HOST = ''
+
+ALMA_API_KEY = 'abc123'
+
+ELASTICSEARCH_HOST = 'http://localhost:9200'

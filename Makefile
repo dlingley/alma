@@ -35,7 +35,7 @@ coverage:
 	coverage run $(MANAGE) test && coverage html
 
 test:
-	$(MANAGE) test
+	$(MANAGE) test --keepdb && flake8 && isort -rc --diff --check-only $(PROJECT_NAME)
 
 reload:
 	$(MANAGE) migrate
