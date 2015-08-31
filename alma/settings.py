@@ -116,12 +116,10 @@ DATABASES = {
 
 ELASTICSEARCH_CONNECTIONS = {
     'default': {
-        'hosts': ['http://localhost:9200'],
+        'hosts': [variable("ELASTICSEARCH_HOST", default='http://localhost:9200')],
         'index_name': 'alma',
     }
 }
-
-LOGGING_CONFIG = 'arcutils.logging.basic'
 
 #
 # UI
