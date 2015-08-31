@@ -38,7 +38,7 @@ def main(request):
 @login_required
 def delete(request, request_id):
     req = get_object_or_404(Request, pk=request_id)
-    form = RequestDeleteForm(request.POST, requests=[req])
+    form = RequestDeleteForm(request.POST, request=req)
     if form.is_valid():
         form.save()
     return HttpResponse()

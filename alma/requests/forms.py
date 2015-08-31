@@ -147,37 +147,33 @@ class OmniForm(forms.Form):
 
 
 class RequestDeleteForm(forms.Form):
+    """
+    Form to delete a Request with support for deleting repeating reservations.
+    """
     THIS_RESERVATION = "1"
     THIS_AND_ALL_AFTER = "2"
     THE_ENTIRE_SERIES = "3"
 
-    def __init__(self, *args, requests, **kwargs):
+    delete = forms.BooleanField(label="Delete?", initial=False, required=False)
+    choice = forms.ChoiceField(label="", required=False, choices=[(THIS_RESERVATION, "This reservation")])
+
+    def __init__(self, *args, request, **kwargs):
         super().__init__(*args, **kwargs)
-        self.requests = requests
-        for request in requests:
-            self.fields["request-%s-delete" % request.pk] = forms.BooleanField(label="Delete?", initial=False, required=False)
+        self.request = request
 
-            choices = [(self.THIS_RESERVATION, "This reservation")]
-            if request.reservation.repeat_on:
-                choices.extend([
-                    (self.THIS_AND_ALL_AFTER, "This and all after it"),
-                    (self.THE_ENTIRE_SERIES, "The entire series")
-                ])
-
-            self.fields["request-%s-delete-choice" % request.pk] = forms.ChoiceField(label="", required=False, choices=choices)
-
-    def __iter__(self):
-        for request in self.requests:
-            yield request, self["request-%s-delete" % request.pk], self["request-%s-delete-choice" % request.pk]
+        if request.reservation.repeat_on:
+            self.fields['choice'].choices += [
+                (self.THIS_AND_ALL_AFTER, "This and all after it"),
+                (self.THE_ENTIRE_SERIES, "The entire series")
+            ]
 
     def save(self):
-        for request in self.requests:
-            if self.cleaned_data.get("request-%s-delete" % request.pk):
-                delete_choice = self.cleaned_data.get("request-%s-delete-choice" % request.pk)
-                if delete_choice == self.THIS_RESERVATION:
-                    request.delete()
-                elif delete_choice == self.THIS_AND_ALL_AFTER:
-                    for r in Request.objects.filter(reservation_id=request.reservation_id, start__gte=request.start):
-                        r.delete()
-                elif delete_choice == self.THE_ENTIRE_SERIES:
-                    Reservation.objects.get(reservation_id=request.reservation_id).delete()
+        if self.cleaned_data.get("delete"):
+            delete_choice = self.cleaned_data.get("choice")
+            if delete_choice == self.THIS_RESERVATION:
+                self.request.delete()
+            elif delete_choice == self.THIS_AND_ALL_AFTER:
+                for r in Request.objects.filter(reservation_id=self.request.reservation_id, start__gte=self.request.start):
+                    r.delete()
+            elif delete_choice == self.THE_ENTIRE_SERIES:
+                Reservation.objects.get(reservation_id=self.request.reservation_id).delete()

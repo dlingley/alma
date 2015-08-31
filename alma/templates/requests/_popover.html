@@ -1,21 +1,19 @@
 <form action="{% url 'requests-delete' request.pk %}" method="post" class="request-interval-form">
-    {% for request, delete_field, delete_choice_field in form %}
-        <p>
-        Reservation #{{ request.pk }} by <a href="#">{{ request.reservation.user.username }}</a> for <em>{{ request.reservation.bib }}</em>
-        from <strong>{{ request.start|date:"P" }}</strong> until <strong>{{ request.end|date:"P" }}</strong>
-        {% if request.reservation.repeat_on %}
-            repeating on {{ days }} starting on {{ request.reservation.first_request.start|date:"D, F j, Y" }} and ending on {{ request.reservation.last_request.start|date:"D, F j, Y" }}.
-        {% endif %}
-        </p>
+    <p>
+    Reservation #{{ request.pk }} by <a href="#">{{ request.reservation.user.username }}</a> for <em>{{ request.reservation.bib }}</em>
+    from <strong>{{ request.start|date:"P" }}</strong> until <strong>{{ request.end|date:"P" }}</strong>
+    {% if request.reservation.repeat_on %}
+        repeating on {{ days }} starting on {{ request.reservation.first_request.start|date:"D, F j, Y" }} and ending on {{ request.reservation.last_request.start|date:"D, F j, Y" }}.
+    {% endif %}
+    </p>
 
-        <div class="form-inline delete-box">
-            {{ delete_field|bootstrap }}
-            <span class="show-on-delete">
-                {{ delete_choice_field|bootstrap }}
-                <button type="submit" class="btn btn-danger btn-block btn-sm">Delete</button>
-            </span>
-        </div>
-    {% endfor %}
+    <div class="form-inline delete-box">
+        {{ form.delete|bootstrap }}
+        <span class="show-on-delete">
+            {{ form.choice|bootstrap }}
+            <button type="submit" class="btn btn-danger btn-block btn-sm">Delete</button>
+        </span>
+    </div>
 </form>
 
 
