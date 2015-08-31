@@ -12,7 +12,7 @@ from alma.alma.api import is_available
 from alma.loans.models import Loan
 from alma.users.models import User
 
-from .forms import OmniForm, RequestChangeForm
+from .forms import OmniForm, RequestDeleteForm
 from .models import Request, iter_intervals
 from .utils import CalendarItem, CalendarItemContainerForTemplate
 
@@ -37,9 +37,9 @@ def main(request):
 
 @csrf_exempt # TODO fix this
 @login_required
-def change_status(request, request_id):
+def delete(request, request_id):
     req = get_object_or_404(Request, pk=request_id)
-    form = RequestChangeForm(request.POST, requests=[req])
+    form = RequestDeleteForm(request.POST, requests=[req])
     if form.is_valid():
         form.save()
     return HttpResponse()

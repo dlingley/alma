@@ -143,7 +143,7 @@ class Request(models.Model):
         if self.reservation.repeat_on:
             days = str(DayOfWeek(self.reservation.repeat_on))
 
-        form = RequestChangeForm(requests=[self])
+        form = RequestDeleteForm(requests=[self])
         return render_to_string("requests/_popover.html", {
             "form": form,
             "request": self,
@@ -151,4 +151,4 @@ class Request(models.Model):
         })
 
 
-from .forms import RequestChangeForm  # isort:skip
+from .forms import RequestDeleteForm  # isort:skip

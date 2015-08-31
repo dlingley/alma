@@ -146,7 +146,7 @@ class OmniForm(forms.Form):
                 )
 
 
-class RequestChangeForm(forms.Form):
+class RequestDeleteForm(forms.Form):
     THIS_RESERVATION = "1"
     THIS_AND_ALL_AFTER = "2"
     THE_ENTIRE_SERIES = "3"

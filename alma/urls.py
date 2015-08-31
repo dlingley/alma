@@ -30,7 +30,7 @@ urlpatterns = patterns(
     url(r'^requests/calendar/?$', requests.calendar, name='requests-calendar'),
     url(r'^requests/available/?$', requests.available, name='requests-available'),
     url(r'^requests/user/?$', requests.user, name='requests-user'),
-    url(r'^requests/change_status/(?P<request_id>\d+)?$', requests.change_status, name='requests-change-status'),
+    url(r'^requests/delete/(?P<request_id>.+)?$', requests.delete, name='requests-delete'),
 
     # Here we define all the URL routes for the users app. Technically, you
     # could put these routes in the app itself, but for non-reusable apps, we

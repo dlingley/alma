@@ -1,4 +1,4 @@
-<form action="{% url 'requests-change-status' request.pk %}" method="post" class="request-interval-form">
+<form action="{% url 'requests-delete' request.pk %}" method="post" class="request-interval-form">
     {% for request, delete_field, delete_choice_field in form %}
         <p>
         Reservation #{{ request.pk }} by <a href="#">{{ request.reservation.user.username }}</a> for <em>{{ request.reservation.bib }}</em>
