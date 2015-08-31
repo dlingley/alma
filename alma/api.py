@@ -1,20 +1,45 @@
+"""
+This module wraps some of the Alma API methods which you can see here:
+https://developers.exlibrisgroup.com/alma/apis
+
+It also has some helper functions like update_items(), return_loan(),
+is_available() that wrap up multiple API calls or do things that would
+otherwise be painful to do
+
+Many of the API calls you'll never need after you use them once. For example,
+the LIBRARY_CODE and ID_TYPE were all found with the API, but
+they (hopefully) won't ever change, so we don't need to call those API
+endpoints anymore.
+"""
 import json
 import time
 import xml.etree.ElementTree as ET
 from datetime import datetime
 from functools import partial
 
+import http
 import requests
 from django.conf import settings
 from django.db import transaction
 from django.utils.timezone import now, utc
 
-API_KEY = settings.ALMA_API_KEY
 
-# these magical special values were derived from lots of trial and error
-library_code = "AVS"
-location_code = "OITAVS"
-id_type = "UNIV_ID"
+def patch_send():
+    old_send = http.client.HTTPConnection.send
+
+    def new_send(self, data):
+        print(data.decode())
+        return old_send(self, data)  # return is not necessary, but never hurts, in case the library is changed
+    http.client.HTTPConnection.send = new_send
+
+patch_send()
+
+
+API_KEY = settings.ALMA_API_KEY
+# these magical special values were derived from lots of trial and error and
+# inspecting the results of various API calls
+LIBRARY_CODE = "AVS"
+ID_TYPE = "UNIV_ID"
 
 
 class AlmaError(Exception):
@@ -187,13 +212,13 @@ def create_booking(username, mms_id, start_date, end_date):
     """
     params = {
         "user_id": username,
-        "user_id_type": id_type,
+        "user_id_type": ID_TYPE,
     }
 
     return post("almaws/v1/bibs/{mms_id}/requests".format(mms_id=mms_id), params=params, data={
         "request_type": "BOOKING",
         "pickup_location_type": "LIBRARY",
-        "pickup_location_library": library_code,
+        "pickup_location_library": LIBRARY_CODE,
         "booking_start_date": start_date,
         "booking_end_date": end_date,
     })
@@ -222,12 +247,12 @@ def create_loan(username, barcode):
     Creates a loan for the item with the specified barcode to `username`
     """
     params = {
-        "user_id_type": id_type,
+        "user_id_type": ID_TYPE,
         "item_barcode": barcode
     }
     data = {
         "circ_desk": {"value": "DEFAULT_CIRC_DESK"},
-        "library": {"value": library_code},
+        "library": {"value": LIBRARY_CODE},
     }
     return post("almaws/v1/users/{user_id}/loans".format(user_id=username), params=params, data=data)
 
@@ -252,7 +277,7 @@ def scan_in(mms_id, holding_id, item_id):
     """
     params = {
         "op": "scan",
-        "library": library_code,
+        "library": LIBRARY_CODE,
         "circ_desk": "DEFAULT_CIRC_DESK",
     }
 
@@ -316,8 +341,12 @@ def parse_alma_datetime(dt):
 
 
 # booking
-#mms_id = "99902463600701853"
+#mms_id = "99902463601001853"
 #print(json.dumps(create_booking("mdj2", mms_id, "2015-08-30T10:10:10Z", "2015-08-30T11:10:10Z"), indent=4))
-#print(json.dumps(delete_booking("5640694860001853", "99902462241301853"), indent=4))
+#request_id = "5814518270001853"
+#print(json.dumps(delete_booking(request_id, mms_id), indent=4))
 #print(json.dumps(get_availability(mms_id, 180), indent=4))
+#print(json.dumps(create_booking("kfarr2", mms_id, "2015-08-30T10:10:10Z", "2015-08-30T11:10:10Z"), indent=4))
 #print(is_available(mms_id, [(datetime(2015, 8, 29, 2, tzinfo=now().tzinfo), datetime(2015, 8, 29, 2, 59, tzinfo=now().tzinfo))]))
+#print(json.dumps(get_availability(mms_id, 180), indent=4))
+#print(json.dumps(create_booking("will", mms_id, "2015-08-30T10:10:10Z", "2015-08-30T11:10:10Z"), indent=4))

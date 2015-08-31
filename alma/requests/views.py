@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.timezone import now, localtime
 from django.contrib.auth.decorators import login_required
 
-from alma.alma.api import is_available
+from alma.api import is_available
 from alma.loans.models import Loan
 from alma.users.models import User
 

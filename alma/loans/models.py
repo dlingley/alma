@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.timezone import now
 from django.template.loader import render_to_string
 
-from alma.alma.api import create_loan, return_loan
+from alma.api import create_loan, return_loan
 
 
 class Loan(models.Model):

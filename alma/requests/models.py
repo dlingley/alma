@@ -18,7 +18,7 @@ from collections import namedtuple
 from django.db import models
 from django.template.loader import render_to_string
 
-from alma.alma.api import create_booking, delete_booking
+from alma.api import create_booking, delete_booking
 
 from .enums import DayOfWeek
 
