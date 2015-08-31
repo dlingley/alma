@@ -32,15 +32,6 @@ urlpatterns = patterns(
     url(r'^requests/user/?$', requests.user, name='requests-user'),
     url(r'^requests/delete/(?P<request_id>.+)?$', requests.delete, name='requests-delete'),
 
-    # Here we define all the URL routes for the users app. Technically, you
-    # could put these routes in the app itself, but for non-reusable apps, we
-    # keep them in the main urlconfs file
-    url(r'^users/home/?$', users.home, name='users-home'),
-    url(r'^users/detail/(?P<user_id>\d+)?$', users.detail, name='users-detail'),
-    url(r'^users/list/?$', users.list_, name='users-list'),
-    url(r'^users/create/?$', users.create, name='users-create'),
-    url(r'^users/edit/(?P<user_id>\d+)/?$', users.edit, name='users-edit'),
-    url(r'^users/delete/(?P<user_id>\d+)/?$', users.delete, name='users-delete'),
     url(r'^users/autocomplete/?$', users.autocomplete, name='users-autocomplete'),
 
     # these url routes are useful for password reset functionality and logging in and out
