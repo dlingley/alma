@@ -18,7 +18,7 @@ class DayOfWeek:
     attrs = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"]
 
     def __init__(self, value):
-        """Takes a value like 3 which is a representation for Sunday (1) and Monday (3)"""
+        """Takes a value like 3 which is a representation for Sunday (1) and Monday (2)"""
         self.value = value
 
     def __iter__(self):

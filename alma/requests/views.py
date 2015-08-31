@@ -20,7 +20,10 @@ DAYS_TO_SHOW = 90
 
 @login_required
 def main(request):
-    """Display the main calendar view"""
+    """
+    Display the main calendar view. The rendered page will make AJAX requests
+    to some of the other views in this module
+    """
     if request.method == "POST":
         form = OmniForm(request.POST)
         if form.is_valid():
