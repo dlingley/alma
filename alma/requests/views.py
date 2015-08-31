@@ -1,11 +1,11 @@
 from collections import OrderedDict
 from datetime import timedelta
 
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.timezone import localtime, now
 from django.views.decorators.csrf import csrf_exempt
-from django.utils.timezone import now, localtime
-from django.contrib.auth.decorators import login_required
 
 from alma.api import is_available
 from alma.loans.models import Loan

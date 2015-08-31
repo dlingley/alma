@@ -1,6 +1,6 @@
 from django.db import models
-from django.utils.timezone import now
 from django.template.loader import render_to_string
+from django.utils.timezone import now
 
 from alma.api import create_loan, return_loan
 from alma.utils import ImpotentManager

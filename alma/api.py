@@ -11,13 +11,13 @@ the LIBRARY_CODE and ID_TYPE were all found with the API, but
 they (hopefully) won't ever change, so we don't need to call those API
 endpoints anymore.
 """
+import http
 import json
 import time
 import xml.etree.ElementTree as ET
 from datetime import datetime
 from functools import partial
 
-import http
 import requests
 from django.conf import settings
 from django.db import transaction

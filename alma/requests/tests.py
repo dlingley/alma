@@ -6,8 +6,8 @@ from django.test import TestCase
 from django.utils.timezone import now
 from model_mommy.mommy import make, prepare
 
-from alma.loans.models import Loan
 from alma.items.models import Item
+from alma.loans.models import Loan
 from alma.users.models import User
 from alma.utils.tests import AlmaTest
 

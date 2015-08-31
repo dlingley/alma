@@ -12,8 +12,8 @@ A Request object represents a request for a Bib on a particular datetime. There
 may be one or more of these attached to a Reservation object. Request objects
 have a representation in Alma (whereas a Reservation does not).
 """
-from datetime import timedelta
 from collections import namedtuple
+from datetime import timedelta
 
 from django.db import models
 from django.template.loader import render_to_string
