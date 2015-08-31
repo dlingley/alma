@@ -150,12 +150,12 @@ class RequestDeleteForm(forms.Form):
     """
     Form to delete a Request with support for deleting repeating reservations.
     """
-    THIS_RESERVATION = "1"
+    THIS = "1"
     THIS_AND_ALL_AFTER = "2"
     THE_ENTIRE_SERIES = "3"
 
     delete = forms.BooleanField(label="Delete?", initial=False, required=False)
-    choice = forms.ChoiceField(label="", required=False, choices=[(THIS_RESERVATION, "This reservation")])
+    choice = forms.ChoiceField(label="", required=False, choices=[(THIS, "This reservation")])
 
     def __init__(self, *args, request, **kwargs):
         super().__init__(*args, **kwargs)
@@ -170,7 +170,7 @@ class RequestDeleteForm(forms.Form):
     def save(self):
         if self.cleaned_data.get("delete"):
             delete_choice = self.cleaned_data.get("choice")
-            if delete_choice == self.THIS_RESERVATION:
+            if delete_choice == self.THIS:
                 self.request.delete()
             elif delete_choice == self.THIS_AND_ALL_AFTER:
                 for r in Request.objects.filter(reservation_id=self.request.reservation_id, start__gte=self.request.start):

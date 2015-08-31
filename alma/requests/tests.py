@@ -12,7 +12,7 @@ from alma.users.models import User
 from alma.utils.tests import AlmaTest
 
 from .enums import DayOfWeek
-from .forms import OmniForm
+from .forms import OmniForm, RequestDeleteForm
 from .models import Request, Reservation, iter_intervals
 
 
@@ -257,3 +257,54 @@ class OmniFormTest(AlmaTest):
         self.assertEqual(loan.user, cleaned_data['user'])
         self.assertEqual(loan.item, cleaned_data['bibs_or_item'])
         self.assertNotEqual(loan.returned_on, None)
+
+
+class RequestDeleteFormTest(AlmaTest):
+    def test_extra_choices_for_repeating_reservations_become_choices(self):
+        res = prepare(Reservation, repeat_on=0)
+        res.save(starting_on=now(), ending_on=now()+timedelta(hours=1))
+        r = make(Request, reservation=res)
+        form = RequestDeleteForm(request=r)
+        self.assertNotIn("This and all after it", str(form['choice']))
+        self.assertNotIn("The entire series", str(form['choice']))
+
+        # now make the reservation repeat, and now we should see the extra choices
+        res = prepare(Reservation, repeat_on=DayOfWeek.MONDAY|DayOfWeek.TUESDAY)
+        res.save(starting_on=now(), ending_on=now()+timedelta(hours=1))
+        r = make(Request, reservation=res)
+        form = RequestDeleteForm(request=r)
+        self.assertIn("This and all after it", str(form['choice']))
+        self.assertIn("The entire series", str(form['choice']))
+
+    def test_save_when_deleting_just_the_single_request(self):
+        res = prepare(Reservation, repeat_on=DayOfWeek.MONDAY|DayOfWeek.TUESDAY)
+        res.save(starting_on=now(), ending_on=now()+timedelta(hours=1), end_repeating_on=now()+timedelta(days=14))
+        request = Request.objects.filter(reservation=res).order_by("pk").first()
+        pre_count = Request.objects.count()
+
+        form = RequestDeleteForm({"delete": 1, "choice": RequestDeleteForm.THIS}, request=request)
+        self.assertTrue(form.is_valid())
+        form.save()
+        self.assertEqual(pre_count-1, Request.objects.count())
+
+    def test_save_when_deleting_entire_series(self):
+        res = prepare(Reservation, repeat_on=DayOfWeek.MONDAY|DayOfWeek.TUESDAY)
+        res.save(starting_on=now(), ending_on=now()+timedelta(hours=1), end_repeating_on=now()+timedelta(days=14))
+        request = Request.objects.filter(reservation=res).order_by("pk").last()
+
+        form = RequestDeleteForm({"delete": 1, "choice": RequestDeleteForm.THE_ENTIRE_SERIES}, request=request)
+        self.assertTrue(form.is_valid())
+        form.save()
+        self.assertEqual(0, Request.objects.count())
+
+    def test_save_when_this_and_all_after_is_chosen(self):
+        res = prepare(Reservation, repeat_on=DayOfWeek.MONDAY|DayOfWeek.TUESDAY)
+        res.save(starting_on=now(), ending_on=now()+timedelta(hours=1), end_repeating_on=now()+timedelta(days=14))
+        # since we're getting the second Request in the reservation, all but
+        # the first should be deleted
+        request = list(Request.objects.filter(reservation=res).order_by("pk"))[1]
+
+        form = RequestDeleteForm({"delete": 1, "choice": RequestDeleteForm.THIS_AND_ALL_AFTER}, request=request)
+        self.assertTrue(form.is_valid())
+        form.save()
+        self.assertEqual(1, Request.objects.count())
