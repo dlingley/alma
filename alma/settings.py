@@ -85,16 +85,6 @@ LDAP = {
 }
 
 #
-# Celery
-#
-
-# CELERY_ACKS_LATE = True
-# CELERY_RESULT_BACKEND = 'amqp'
-# The celery broker URL 'amqp://guest:guest@localhost//'
-# BROKER_URL = variable("BROKER_URL", default='amqp://guest:guest@localhost//')
-
-
-#
 # Email
 #
 

@@ -5,7 +5,6 @@ pytz
 git+https://github.com/PSU-OIT-ARC/django-arcutils.git#egg=django-arcutils
 #elasticsearch
 python3-ldap
-#celery
 djangocas
 django-perms
 mock
