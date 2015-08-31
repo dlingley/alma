@@ -48,9 +48,9 @@ def delete(request, request_id):
 @login_required
 def user(request):
     """
-    Return the recent Requests Intervals for this user, or ones that have been
-    checked out
+    Return the recent Requests for this user.
     """
+    # TODO show loans too
     email = User.username_to_email(request.GET.get("username", ""))
     requests = Request.objects.filter(reservation__user__email=email).filter(
         end__lte=now()+timedelta(hours=10000),

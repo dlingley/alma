@@ -82,9 +82,9 @@ class CalendarItemContainerForTemplate:
     """
     def __init__(self, day):
         # calendar_items are stored as an OrderedDict where the key is a "level"
-        # integer, and the value is a list of RequestInterval objects. When
+        # integer, and the value is a list of CalendarItem objects. When
         # calendar_items on this day overlap, we add another level, and stick the
-        # RequestInterval on that level. This helps position the items on the
+        # CalenderItem on that level. This helps position the items on the
         # page so they don't overlap
         self.calendar_items = OrderedDict({0: []})
 
@@ -146,7 +146,7 @@ class CalendarItemContainerForTemplate:
 
     def add(self, calendar_item):
         """
-        This adds an calendar_item to this object's calendar_item collection of them and
+        This adds a CalendarItem to this object's calendar_item collection of them and
         sets a bunch of properties on the object for use in the template
         """
         # we need to detect collisions on the calendar. We start off with one
