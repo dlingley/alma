@@ -49,6 +49,6 @@ class Loan(models.Model):
             response = create_loan(username=self.user.username, barcode=self.item.barcode)
             self.loan_id = response['loan_id']
         else:
-            response = return_loan(mms_id=self.item.bib.pk, item_id=self.item.pk)
+            return_loan(mms_id=self.item.bib.pk, item_id=self.item.pk)
 
         return super().save(*args, **kwargs)
