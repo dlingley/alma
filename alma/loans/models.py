@@ -34,6 +34,12 @@ class Loan(models.Model):
             "loan": self,
         })
 
+    def delete(self):
+        # make sure to clean up the loan in Alma before deleting
+        if self.returned_on is None:
+            return_loan(mms_id=self.item.bib.pk, item_id=self.item.pk)
+        return super().delete()
+
     def save(self, *args, **kwargs):
         """
         Create the loan in Alma or mark it as returned
