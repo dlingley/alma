@@ -7,6 +7,7 @@ from .models import User
 
 LOGIN_GROUPS = ['arc']
 
+
 class PSUBackend(CASBackend):
     def get_or_init_user(self, username):
         # make sure this user is in the required group

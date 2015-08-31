@@ -23,29 +23,6 @@ from alma.alma.api import create_booking, delete_booking
 from .enums import DayOfWeek
 
 
-#class RequestManager(models.Manager):
-#    def is_available(self, bib, start, end, repeat_on=0, end_repeating_on=None):
-#        request = Request(repeat_on=repeat_on)
-#        duration = end - start
-#        if end_repeating_on is None:
-#            end_repeating_on = end
-#
-#        intervals = list(RequestInterval.objects.filter(
-#            Q(start__lte=end_repeating_on)|Q(end__lte=end_repeating_on)
-#        ).filter(
-#            Q(start__gte=start)|Q(end__gte=start)
-#        ).filter(
-#            request__bib__pk=bib.pk
-#        ).order_by("start"))
-#
-#        # the best we can do here is O(n*lg(n)) (I think)
-#        intervals.extend(request.iter_intervals(start, end_repeating_on, duration))
-#        intervals.sort(key=lambda interval: (interval.start, interval.end))
-#        for index, interval in enumerate(intervals[:-1]):
-#            if interval.intersects(intervals[index+1]):
-#                return False
-#        return True
-
 def iter_intervals(starting_on, ending_on, end_repeating_on=None, repeat_on=0):
     """
     Yields named two-tuples containing datetimes representing an interval that
@@ -168,7 +145,7 @@ class Request(models.Model):
         """
         Deletes this request in Alma and in our database
         """
-        response = delete_booking(self.request_id, self.reservation.bib.mms_id)
+        delete_booking(self.request_id, self.reservation.bib.mms_id)
         super().delete(*args, **kwargs)
 
     def to_html(self):

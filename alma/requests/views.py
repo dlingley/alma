@@ -1,9 +1,8 @@
 from collections import OrderedDict
-from datetime import date, timedelta
+from datetime import timedelta
 
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.timezone import now, localtime
 from django.contrib.auth.decorators import login_required
@@ -87,7 +86,7 @@ def available(request):
                 return HttpResponse("notvalid")
 
         if form.action_to_take_on_save() != "reserving":
-                return HttpResponse("notvalid")
+            return HttpResponse("notvalid")
 
         intervals = list(iter_intervals(
             form.cleaned_data['starting_on'],

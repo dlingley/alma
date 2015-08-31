@@ -31,6 +31,8 @@ ALMA_API_KEY = variable("ALMA_API_KEY")
 DEBUG = variable("DEBUG", default=False)
 TEMPLATE_DEBUG = DEBUG
 DEFAULT_FROM_EMAIL = SERVER_EMAIL = 'no-reply@pdx.edu'
+
+
 # allow the use of wildcards in the INTERAL_IPS setting
 class IPList(list):
     # do a unix-like glob match
@@ -52,8 +54,8 @@ SECRET_KEY = variable("SECRET_KEY", os.urandom(64).decode("latin1"))
 HOSTNAME = variable("HOSTNAME", default="10.0.0.10.xip.io:8000")
 # we construct the SESSION_COOKIE_DOMAIN based on the hostname. We prepend a
 # dot so the cookie is set for all subdomains
-#SESSION_COOKIE_DOMAIN = HOSTNAME.split(":")[0]
-#ALLOWED_HOSTS = [SESSION_COOKIE_DOMAIN]
+# SESSION_COOKIE_DOMAIN = HOSTNAME.split(":")[0]
+# ALLOWED_HOSTS = [SESSION_COOKIE_DOMAIN]
 
 #
 # Test Stuff
@@ -124,7 +126,7 @@ DATABASES = {
 
 ELASTICSEARCH_CONNECTIONS = {
     'default': {
-        'hosts': ['http://localhost:9200',],
+        'hosts': ['http://localhost:9200'],
         'index_name': 'alma',
     }
 }
@@ -155,7 +157,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    #'debug_toolbar',
+    # 'debug_toolbar',
     'permissions',
     'arcutils',
     'elasticmodels',
@@ -219,16 +221,3 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
     DJANGO_DIR("templates"),
 )
-
-# using the cached template loader improves performance quite a bit
-#TEMPLATE_LOADERS = (
-#    ('django.template.loaders.cached.Loader', (
-#        'django.template.loaders.filesystem.Loader',
-#        'django.template.loaders.app_directories.Loader',
-#    )),
-#)
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
-    }
-}

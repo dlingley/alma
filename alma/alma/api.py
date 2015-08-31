@@ -63,7 +63,6 @@ def request(endpoint, params=None, data=None, method="get"):
         if data:
             data = json.dumps(data, default=default)
 
-
     response = method("https://api-na.hosted.exlibrisgroup.com/" + endpoint, params=params, data=data, headers=headers)
 
     # no content to parse, but everything was successful

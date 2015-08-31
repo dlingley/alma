@@ -31,6 +31,7 @@ def autocomplete(request):
 
     return JsonResponse(items, safe=False)
 
+
 @login_required
 def autocomplete_bibs(request):
     """
