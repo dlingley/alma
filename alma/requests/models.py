@@ -19,6 +19,7 @@ from django.db import models
 from django.template.loader import render_to_string
 
 from alma.api import create_booking, delete_booking
+from alma.utils import ImpotentManager
 
 from .enums import DayOfWeek
 
@@ -64,6 +65,8 @@ class Reservation(models.Model):
     # the bib being requested
     bib = models.ForeignKey("items.Bib")
 
+    objects = ImpotentManager()
+
     class Meta:
         db_table = "reservation"
 
@@ -108,6 +111,8 @@ class Request(models.Model):
 
     reservation = models.ForeignKey(Reservation, help_text="The parent reservation linking one or more requests together")
     loan = models.OneToOneField("loans.Loan", null=True, default=None)
+
+    objects = ImpotentManager()
 
     class Meta:
         db_table = "request"

@@ -3,6 +3,7 @@ from django.utils.timezone import now
 from django.template.loader import render_to_string
 
 from alma.api import create_loan, return_loan
+from alma.utils import ImpotentManager
 
 
 class Loan(models.Model):
@@ -15,6 +16,8 @@ class Loan(models.Model):
     user = models.ForeignKey("users.User")
     loaned_on = models.DateTimeField(auto_now_add=True)
     returned_on = models.DateTimeField(null=True, default=None)
+
+    objects = ImpotentManager()
 
     class Meta:
         db_table = "loan"
