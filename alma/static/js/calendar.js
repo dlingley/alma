@@ -101,7 +101,7 @@ $(document).ready(function(){
         });
     });
 
-    // each little RequestInterval object on the calendar has a popover
+    // each little CalendarItem object on the calendar has a popover
     $('body').popover({
         "placement": "auto",
         "trigger": "click",
@@ -233,13 +233,6 @@ $(document).ready(function(){
             }
         }
     })
-    //.on("typeahead:change", function(){
-    //    console.log("here")
-    //    console.log($('#id_user').val());
-    //    $('body').trigger("calendar:redraw");
-    //    console.log($('#id_user').val());
-    //})
-    //
 
     $('#request-section').hide();
 });

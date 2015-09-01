@@ -3,7 +3,7 @@ from django.db import models
 
 class Bib(models.Model):
     """
-    A bib is like a collection of homogenius items.
+    A bib is like a collection of homogeneous items.
 
     For example a book "Old Man and the Sea" would be a bib, and it would have
     multiple items (which can be loaned out)

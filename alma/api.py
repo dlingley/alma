@@ -291,7 +291,7 @@ def is_available(mms_id, intervals):
     `intervals` is assumed to be a list of two-tuples containing start and end
     datetime objects.
     """
-    end = intervals[-1][1]
+    end = intervals[-1].end
     days = (end - now()).days + 1
     response = get_availability(mms_id, days)
     # nothing got booked

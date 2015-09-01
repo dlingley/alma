@@ -52,10 +52,10 @@ def user(request):
     """
     Return the recent Requests for this user.
     """
-    # TODO show loans too
+    # TODO show loans too?
     email = User.username_to_email(request.GET.get("username", ""))
     requests = Request.objects.filter(reservation__user__email=email).filter(
-        end__lte=now()+timedelta(hours=10000),
+        end__lte=now()+timedelta(hours=10000),  # TODO change this to something reasonable according to the client
         end__gte=now()
     ).select_related(
         "reservation",
@@ -71,7 +71,8 @@ def user(request):
 @login_required
 def available(request):
     """
-    This is a little hacky, but it checks to see if the
+    This is a little hacky, but it checks to see if the Bibs are available for
+    the user to checkout
     """
     if request.method == "POST":
         form = OmniForm(request.POST)
@@ -80,16 +81,16 @@ def available(request):
         necessary_fields = ['bibs_or_item', 'starting_on', 'ending_on', 'repeat', 'repeat_on', 'end_repeating_on']
         for field in necessary_fields:
             if field in form.errors:
-                return HttpResponse("notvalid")
+                return HttpResponse()
 
         # these fields must not be falsy
         truthy_fields = ['starting_on', 'ending_on']
         for field in truthy_fields:
             if not form.cleaned_data.get(field):
-                return HttpResponse("notvalid")
+                return HttpResponse()
 
         if form.action_to_take_on_save() != "reserving":
-            return HttpResponse("notvalid")
+            return HttpResponse()
 
         intervals = list(iter_intervals(
             form.cleaned_data['starting_on'],
@@ -98,24 +99,29 @@ def available(request):
             form.cleaned_data['repeat_on']
         ))
 
-        output = []
+        # For interval, we want to show the Bibs that the
+        # user is requesting along with a flag that says if that Bib is
+        # available
+        request_blocks = []
         for interval in intervals:
-            output.append({
+            request_blocks.append({
                 "start": interval[0],
                 "end": interval[1],
+                # we will populate this with a dict containing info about the
+                # bib and if it is available on this interval
                 "items": []
             })
 
         for bib in form.cleaned_data['bibs_or_item']:
             results = list(is_available(bib.mms_id, intervals))
-            for data, is_avail in zip(output, results):
-                data['items'].append({"name": str(bib), "is_available": is_avail})
+            for block, is_avail in zip(request_blocks, results):
+                block['items'].append({"name": str(bib), "is_available": is_avail})
 
         return render(request, "requests/_availability.html", {
-            "request_blocks": output,
+            "request_blocks": request_blocks,
         })
 
-    return HttpResponse("notvalid")
+    return HttpResponse()
 
 
 @login_required
