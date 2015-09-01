@@ -25,7 +25,6 @@ urlpatterns = patterns(
     url(r'^logout/?$', 'djangocas.views.logout', name="logout"),
 
     url(r'^items/autocomplete/?$', items.autocomplete, name='items-autocomplete'),
-    url(r'^bibs/autocomplete/?$', items.autocomplete_bibs, name='bibs-autocomplete'),
 
     url(r'^requests/calendar/?$', requests.calendar, name='requests-calendar'),
     url(r'^requests/available/?$', requests.available, name='requests-available'),

@@ -52,9 +52,6 @@ class ItemIndex(Index):
     # analyzer, we don't have to use the analyizer elsewhere
     name = StringField(analyzer=custom_analyzer)
 
-    def get_queryset(self, **kwargs):
-        return super().get_queryset().select_related("bib")
-
     class Meta:
         doc_type = "item"
         fields = [
@@ -65,3 +62,6 @@ class ItemIndex(Index):
 
     def prepare_name(self, instance):
         return instance.bib.name
+
+    def get_queryset(self, **kwargs):
+        return super().get_queryset().select_related("bib")

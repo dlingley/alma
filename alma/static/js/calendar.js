@@ -195,27 +195,22 @@ $(document).ready(function(){
 
     $('#id_bibs_or_item').typeahead({}, {
         source: function(query, syncResults, asyncResults){
-            $.get("/bibs/autocomplete", {query: query}, asyncResults);
-        },
-        display: function(item){
-            return item.name + " (MMS_ID: " + item.mms_id + ")"
-        },
-        templates: {
-            suggestion: function(item){
-                return "<div><strong>" + item.name + "</strong></div>"
-            }
-        },
-    },
-    {
-        source: function(query, syncResults, asyncResults){
             $.get("/items/autocomplete", {query: query}, asyncResults);
         },
         display: function(item){
-            return item.name + " (Barcode: " + item.barcode + ")"
+            if(item.type == "ITEM"){
+                return item.name + " (Barcode: " + item.barcode + ")"
+            } else if(item.type == "BIB"){
+                return item.name + " (MMS_ID: " + item.mms_id + ")"
+            }
         },
         templates: {
             suggestion: function(item){
-                return "<div>" + item.name + "<br />#" + item.barcode + "</em></div>"
+                if(item.type == "ITEM"){
+                    return "<div>" + item.name + "<br />#" + item.barcode + "</em></div>"
+                } else if(item.type == "BIB"){
+                    return "<div><strong>" + item.name + "</strong></div>"
+                }
             }
         },
     }).on("typeahead:change typeahead:select", hide_or_show_create_request)
