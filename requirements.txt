@@ -13,3 +13,4 @@ coverage
 flake8
 git+https://github.com/PSU-OIT-ARC/elasticmodels.git#egg=elasticmodels
 isort
+requests
